@@ -24,6 +24,7 @@ pub type SuiteResult {
   // - Should suites be identified by something other than name?
   // - Do we need uniqueness among suite names?
   SuiteComplete(suite_name: String, results: List(TestResult))
+  SuiteCancelled(suite_name: String)
 }
 
 pub type TestResult {

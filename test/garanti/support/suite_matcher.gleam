@@ -8,6 +8,7 @@ pub fn have_suite_name(
 ) -> garanti.SuiteResult {
   let actual = case result {
     garanti.SuiteComplete(name, ..) -> name
+    garanti.SuiteCancelled(name) -> name
   }
 
   case actual == expected {
@@ -29,6 +30,7 @@ pub fn have_completed_tests(
 ) -> garanti.SuiteResult {
   let actual = case result {
     garanti.SuiteComplete(results:, ..) -> list.length(results)
+    _ -> 0
   }
 
   case actual == expected {
@@ -41,5 +43,13 @@ pub fn have_completed_tests(
           string.inspect(actual),
           ").",
         ])
+  }
+}
+
+pub fn have_been_cancelled(result: garanti.SuiteResult) -> garanti.SuiteResult {
+  case result {
+    garanti.SuiteComplete(name, ..) ->
+      panic as string.concat(["Test suite ", name, " was not cancelled"])
+    garanti.SuiteCancelled(..) -> result
   }
 }

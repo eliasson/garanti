@@ -9,6 +9,8 @@ import logging.{Debug, log}
 pub type SuiteMessages {
   /// Message sent when a test within the suite has completed.
   TestComplete(result: garanti.TestResult)
+  /// Message sent to abort the suite and ignore collecting any test results.
+  CancelSuite
 }
 
 /// The state this actor keeps:
@@ -98,6 +100,13 @@ fn handle_message(state: State, msg: SuiteMessages) {
           actor.continue(new_state)
         }
       }
+    }
+
+    CancelSuite -> {
+      // This will just stop the suite from listening for completions from the test.
+      // The tests are still run in their processes. Can / should be send them something?
+      process.send(state.reporter, garanti.SuiteCancelled(state.suite_name))
+      actor.stop()
     }
   }
 }
