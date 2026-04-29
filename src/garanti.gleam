@@ -7,3 +7,25 @@ pub type AssertionResult {
   /// The test failed, one or more assertion(s) was NOT fulfilled.
   Fail(String)
 }
+
+/// The top level structure for any tests is a suite. All tests must belong to ONE suite,
+/// there are no free-form tests.
+pub type Suite {
+  Suite(name: String)
+}
+
+pub type Test {
+  /// A standard named tests with a parameter-less function that is the test.
+  Test(name: String, run: fn() -> AssertionResult)
+}
+
+pub type SuiteResult {
+  // TODO
+  // - Should suites be identified by something other than name?
+  // - Do we need uniqueness among suite names?
+  SuiteComplete(suite_name: String, results: List(TestResult))
+}
+
+pub type TestResult {
+  TestResult(name: String, result: AssertionResult)
+}
