@@ -11,7 +11,7 @@ pub type AssertionResult {
 /// The top level structure for any tests is a suite. All tests must belong to ONE suite,
 /// there are no free-form tests.
 pub type Suite {
-  Suite(name: String)
+  Suite(name: String, tests: List(Test))
 }
 
 pub type Test {
