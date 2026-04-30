@@ -26,4 +26,4 @@ Initially I want to implement this project myself, then I should open up for con
 
 ## Artificial Intelligence
 
-I want this project to be mine with the purpose of something small and fun to work and polish. Therefore I do not want AI generated code in this project. Using an AI as a rubberduck, conversation, help is perfectly fine. Just not code contribution.
+I want this project to be mine with the purpose of something small and fun to work and polish. Therefore I do not want AI generated code in this project. Using an AI as a rubberduck, conversation, help is perfectly fine, but not for code generation. There is one particular part of Garanti that is generated with the help of Claude Code though, the test discovery mechanism.
