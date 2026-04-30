@@ -25,6 +25,23 @@ pub fn it_should_pass_suite_with_three_passing_tests_test() {
   |> should.be_ok
   |> suite_matcher.have_suite_name("TestSuite")
   |> suite_matcher.have_completed_tests(3)
+  |> suite_matcher.have_passing_tests(3)
+  |> suite_matcher.have_failing_tests(0)
+}
+
+pub fn it_should_fail_suite_test() {
+  let probe = suite_probe.new()
+
+  let test_suite = garanti.Suite("TestSuite", [tests.failing_test()])
+
+  let assert Ok(_) = suite.start(test_suite, probe.subject)
+
+  suite_probe.receive_result(probe)
+  |> should.be_ok
+  |> suite_matcher.have_suite_name("TestSuite")
+  |> suite_matcher.have_completed_tests(1)
+  |> suite_matcher.have_passing_tests(0)
+  |> suite_matcher.have_failing_tests(1)
 }
 
 pub fn it_should_cancel_suite_test() {

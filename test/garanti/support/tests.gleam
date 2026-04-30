@@ -28,3 +28,8 @@ pub fn sleeping_test(duration: Int) -> garanti.Test {
     garanti.Pass
   })
 }
+
+/// An always failing tests.
+pub fn failing_test() -> garanti.Test {
+  garanti.Test("Failing tests", failing_assert)
+}
