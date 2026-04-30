@@ -27,3 +27,31 @@ Initially I want to implement this project myself, then I should open up for con
 ## Artificial Intelligence
 
 I want this project to be mine with the purpose of something small and fun to work and polish. Therefore I do not want AI generated code in this project. Using an AI as a rubberduck, conversation, help is perfectly fine, but not for code generation. There is one particular part of Garanti that is generated with the help of Claude Code though, the test discovery mechanism.
+
+## Features
+
+Features and limitiations that needs to be described and illustrated in a documentation.
+
+Test discovery performs some validation on the suites and show warnings for:
+
+- Suite names that are not unique
+
+```
+gleam test
+
+> Analysed suites: No problems found.
+
+   - or -
+
+gleam test
+
+> Analysed suites:
+- Multiple suites named "Foo" (recommendation is that each suite has a unique name).
+- Suite "Bar" contains no tests.
+
+```
+
+## Matchers needed
+
+- [ ] List equivalent.
+- [ ] Distinct list items.
