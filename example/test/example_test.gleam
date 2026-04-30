@@ -1,13 +1,13 @@
-import gleeunit
+import garanti.{type Suite, Suite, Test}
 
 pub fn main() -> Nil {
-  gleeunit.main()
+  garanti.main()
 }
 
-// gleeunit test functions end in `_test`
-pub fn hello_world_test() {
-  let name = "Joe"
-  let greeting = "Hello, " <> name <> "!"
-
-  assert greeting == "Hello, Joe!"
+// Each function ending in _suite returns suite which are run in parallel by Garanti.
+pub fn hello_world_suite() -> Suite {
+  Suite("Hello world", [
+    Test("should pass", fn() { garanti.Pass }),
+    Test("should also pass", fn() { garanti.Pass }),
+  ])
 }
