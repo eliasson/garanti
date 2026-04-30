@@ -48,3 +48,17 @@ pub fn it_should_identify_multiple_duplicate_suite_names_test() {
     discovery.DuplicateSuiteName("Bravo"),
   ])
 }
+
+pub fn it_should_identify_empty_suites_test() {
+  [
+    Suite("Alpha", []),
+    Suite("Bravo", []),
+    Suite("Charlie", [Test("One", tests.passing_assert)]),
+  ]
+  |> discovery.analyse_suites()
+  |> list.sort(fn(a, b) { string.compare(a.suite_name, b.suite_name) })
+  |> should.equal([
+    discovery.EmptySuite("Alpha"),
+    discovery.EmptySuite("Bravo"),
+  ])
+}

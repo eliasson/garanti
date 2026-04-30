@@ -13,6 +13,8 @@ pub fn discover_all_suites() -> List(Suite) {
 pub type AnalysisResult {
   /// When more than one suite share the same name (case-insensitive).
   DuplicateSuiteName(suite_name: String)
+  /// A suite that contains no tests.
+  EmptySuite(suite_name: String)
 }
 
 /// Process the list of suites that was discovered and identify any potential problems with
@@ -40,7 +42,13 @@ fn analyse_suites_loop(
         False -> []
       }
 
+      let empties = case head.tests {
+        [] -> [EmptySuite(head.name)]
+        _ -> []
+      }
+
       duplicates
+      |> list.append(empties)
       |> list.append(analyse_suites_loop(tail, set.insert(names, suite_name)))
     }
   }

@@ -1,5 +1,4 @@
 import garanti
-import gleam/int
 import gleam/list
 import gleam/string
 
