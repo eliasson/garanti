@@ -13,13 +13,45 @@
 % test by using the _test suffix. Then to expose a function where the exports
 % of these modules can be retrieved.
 
-% Returns all currently loaded modules whose name ends with "_test".
-% code:all_loaded/0 gives [{ModuleAtom, Filepath}] for every loaded beam file.
-% Module names are atoms in Erlang but strings in Gleam, so we convert with atom_to_binary/2.
+% Returns all available modules whose name ends with "_test" and belong to the
+% same project as the test entry point.
+%
+% Gleam namespaces compiled modules as "<project>@<module>", so "example@another_test"
+% belongs to the "example" project. We find the project name by inspecting the current
+% call stack for the main/0 frame — that is always the test entry point — and extracting
+% its namespace prefix.
+%
+% code:all_available/0 gives [{ModuleNameString, Filepath, IsLoaded}] for every module
+% on the code path, including unloaded ones. We call code:ensure_loaded/1 before
+% returning so that module_info/1 can be called on them by the caller.
+% Module names come back as character lists from all_available/0, so we convert
+% to atom first, then to binary for Gleam.
 loaded_test_modules() ->
-    AllLoaded = code:all_loaded(),
-    [atom_to_binary(Mod, utf8)
-     || {Mod, _Path} <- AllLoaded, is_test_module(atom_to_list(Mod))].
+    Prefix = test_project_prefix(),
+    [begin
+        Atom = list_to_atom(Mod),
+        code:ensure_loaded(Atom),
+        atom_to_binary(Atom, utf8)
+     end
+     || {Mod, _Path, _Loaded} <- code:all_available(),
+        is_test_module(Mod),
+        lists:prefix(Prefix, Mod)].
+
+% Walks the current call stack looking for a main/0 frame, then extracts the
+% namespace prefix (the part before "@") from that module name.
+test_project_prefix() ->
+    {current_stacktrace, Stack} = process_info(self(), current_stacktrace),
+    find_prefix_in_stack(Stack).
+
+find_prefix_in_stack([]) -> "";
+find_prefix_in_stack([{Mod, main, 0, _} | _]) ->
+    ModStr = atom_to_list(Mod),
+    case string:split(ModStr, "@", leading) of
+        [Prefix, _] -> Prefix ++ "@";
+        _           -> ""
+    end;
+find_prefix_in_stack([_ | Rest]) ->
+    find_prefix_in_stack(Rest).
 
 is_test_module(Name) ->
     lists:suffix("_test", Name).
