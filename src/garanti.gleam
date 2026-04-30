@@ -30,7 +30,3 @@ pub type SuiteResult {
 pub type TestResult {
   TestResult(name: String, result: AssertionResult)
 }
-
-pub fn main() {
-  todo
-}
