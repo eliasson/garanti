@@ -3,7 +3,7 @@
 // the `./example/` directory.
 
 import garanti
-import garanti/internal/console.{Info, Warning, print}
+import garanti/internal/console.{Info, Success, Warning, print}
 import garanti/internal/describer
 import gleam/erlang/process.{type Subject}
 
@@ -29,21 +29,26 @@ fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
     garanti.SuiteComplete(suite_name:, results:) -> {
       print(out, Info(describer.suite_results(suite_name, results)))
 
-      let new_state = State(state.number_suites - 1)
-      case new_state.number_suites {
-        0 -> actor.stop()
-        _ -> actor.continue(new_state)
-      }
+      State(state.number_suites - 1)
+      |> are_we_done_yet(out)
     }
 
     garanti.SuiteCancelled(suite_name) -> {
       print(out, Warning("Suite " <> suite_name <> " was cancelled"))
 
-      let new_state = State(state.number_suites - 1)
-      case new_state.number_suites {
-        0 -> actor.stop()
-        _ -> actor.continue(new_state)
-      }
+      State(state.number_suites - 1)
+      |> are_we_done_yet(out)
     }
+  }
+}
+
+fn are_we_done_yet(new_state: State, out: console.Output) {
+  case new_state.number_suites {
+    0 -> {
+      print(out, Success("All suites run!"))
+      actor.stop()
+    }
+
+    _ -> actor.continue(new_state)
   }
 }

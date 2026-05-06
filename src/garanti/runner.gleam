@@ -1,5 +1,5 @@
 import garanti
-import garanti/internal/console.{Error, Info, print}
+import garanti/internal/console.{Error, Info}
 import garanti/internal/console_reporter
 import garanti/internal/discovery
 import garanti/internal/suite
@@ -13,45 +13,42 @@ import gleam/string
 /// - Report progress and test result.
 pub fn run(level: garanti.LogLevel) -> Nil {
   let output = console.Output(level)
+  let print = fn(m: console.Message) { console.print(output, m) }
 
   let suites = discovery.discover_all_suites()
   let number_of_suites = list.length(suites)
 
-  perform_analysis(suites)
-  |> list.each(fn(l) { print(output, Info(l)) })
+  let messages = perform_analysis(suites)
+  console.print_all(output, messages)
 
-  print(
-    output,
-    Info("Discovered " <> number_of_suites |> int.to_string <> " suite(s)."),
-  )
+  print(Info("Discovered " <> number_of_suites |> int.to_string <> " suite(s)."))
 
   // Start the actor that collects progress from each suite.
   case console_reporter.start(output, number_of_suites) {
     Ok(started) -> {
-      print(
-        output,
-        Info("Running " <> number_of_suites |> int.to_string <> " suites..."),
-      )
+      print(Info(
+        "Running " <> number_of_suites |> int.to_string <> " suites...",
+      ))
 
       // Start a suite actor for each discovered suite.
       list.each(suites, fn(s) { suite.start(s, started.data) })
     }
 
     _ -> {
-      print(output, Error("Failed to start the console reporter!"))
+      print(Error("Failed to start the console reporter!"))
       Nil
     }
   }
   Nil
 }
 
-fn perform_analysis(suites: List(garanti.Suite)) -> List(String) {
+fn perform_analysis(suites: List(garanti.Suite)) -> List(console.Message) {
   case discovery.analyse_suites(suites) {
-    [] -> ["Analysed suites: No problems found."]
+    [] -> [Info("Analysed suites: No problems found.")]
     results ->
       results
       |> list.map(discovery.describe_analysis_result)
-      |> list.map(fn(msg) { string.append("[WARNING] ", msg) })
       |> list.sort(string.compare)
+      |> list.map(console.Warning)
   }
 }
