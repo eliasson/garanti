@@ -16,19 +16,22 @@ pub fn run(level: garanti.LogLevel) -> Nil {
   let print = fn(m: console.Message) { console.print(output, m) }
 
   let suites = discovery.discover_all_suites()
-  let number_of_suites = list.length(suites)
+
+  print(Info(
+    "Discovered " <> list.length(suites) |> int.to_string <> " suite(s).",
+  ))
 
   let messages = perform_analysis(suites)
   console.print_all(output, messages)
 
-  print(Info("Discovered " <> number_of_suites |> int.to_string <> " suite(s)."))
+  // Skip running empty suites
+  let tests_to_run = list.filter(suites, fn(s) { !list.is_empty(s.tests) })
+  let nr_tests_to_run = list.length(tests_to_run)
 
   // Start the actor that collects progress from each suite.
-  case console_reporter.start(output, number_of_suites) {
+  case console_reporter.start(output, nr_tests_to_run) {
     Ok(started) -> {
-      print(Info(
-        "Running " <> number_of_suites |> int.to_string <> " suites...",
-      ))
+      print(Info("Running " <> nr_tests_to_run |> int.to_string <> " suites..."))
 
       // Start a suite actor for each discovered suite.
       list.each(suites, fn(s) { suite.start(s, started.data) })

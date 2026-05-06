@@ -13,10 +13,9 @@ pub fn duplicate_suite() -> Suite {
   ])
 }
 
-// TODO Exclude empty suites from exected suite count.
-// pub fn empty_suite() -> Suite {
-//   Suite("Some forgotten suite", [])
-// }
+pub fn empty_suite() -> Suite {
+  Suite("Some forgotten suite", [])
+}
 
 pub fn four_suite() -> Suite {
   Suite("Another dup", [
