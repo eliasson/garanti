@@ -1,5 +1,5 @@
 import garanti
-import garanti/internal/console
+import garanti/internal/console.{Error, Info, print}
 import garanti/internal/console_reporter
 import garanti/internal/discovery
 import garanti/internal/suite
@@ -18,19 +18,19 @@ pub fn run(level: garanti.LogLevel) -> Nil {
   let number_of_suites = list.length(suites)
 
   perform_analysis(suites)
-  |> list.each(fn(l) { console.info(output, l) })
+  |> list.each(fn(l) { print(output, Info(l)) })
 
-  console.info(
+  print(
     output,
-    "Discovered " <> number_of_suites |> int.to_string <> " suite(s).",
+    Info("Discovered " <> number_of_suites |> int.to_string <> " suite(s)."),
   )
 
   // Start the actor that collects progress from each suite.
   case console_reporter.start(output, number_of_suites) {
     Ok(started) -> {
-      console.info(
+      print(
         output,
-        "Running " <> number_of_suites |> int.to_string <> " suites...",
+        Info("Running " <> number_of_suites |> int.to_string <> " suites..."),
       )
 
       // Start a suite actor for each discovered suite.
@@ -38,7 +38,7 @@ pub fn run(level: garanti.LogLevel) -> Nil {
     }
 
     _ -> {
-      console.error(output, "Failed to start the console reporter!")
+      print(output, Error("Failed to start the console reporter!"))
       Nil
     }
   }

@@ -8,32 +8,25 @@ pub type Output {
   Output(level: garanti.LogLevel)
 }
 
-pub fn error(out: Output, line: String) -> Output {
-  case out.level {
-    garanti.Error -> print_it(out, line)
-    _ -> out
-  }
+pub type Message {
+  Error(String)
+  Warning(String)
+  Info(String)
 }
 
-pub fn warning(out: Output, line: String) -> Output {
-  case out.level {
-    garanti.Error -> print_it(out, line)
-    garanti.Warning -> print_it(out, line)
-    _ -> out
-  }
-}
+pub fn print(out: Output, message: Message) -> Output {
+  case out.level, message {
+    garanti.Error, Error(line) -> print_it(out, line)
 
-pub fn info(out: Output, line: String) -> Output {
-  case out.level {
-    garanti.Error -> print_it(out, line)
-    garanti.Warning -> print_it(out, line)
-    garanti.Info -> print_it(out, line)
-    garanti.Debug -> print_it(out, line)
-  }
-}
+    garanti.Error, Warning(line) -> print_it(out, line)
+    garanti.Warning, Warning(line) -> print_it(out, line)
 
-pub fn debug(out: Output, line: String) -> Output {
-  print_it(out, line)
+    garanti.Error, Info(line) -> print_it(out, line)
+    garanti.Warning, Info(line) -> print_it(out, line)
+    garanti.Info, Info(line) -> print_it(out, line)
+
+    _, _ -> out
+  }
 }
 
 fn print_it(out: Output, line: String) -> Output {
