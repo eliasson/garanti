@@ -2,7 +2,7 @@ import garanti.{type Suite, Suite, Test}
 import garanti/runner
 
 pub fn main() -> Nil {
-  runner.run()
+  runner.run(garanti.Debug)
 }
 
 // Each function ending in _suite returns suite which are run in parallel by Garanti.

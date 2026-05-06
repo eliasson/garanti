@@ -1,27 +1,51 @@
 import garanti
+import garanti/internal/console
+import garanti/internal/console_reporter
 import garanti/internal/discovery
+import garanti/internal/suite
 import gleam/int
-import gleam/io
 import gleam/list
 import gleam/string
 
-pub fn run() -> Nil {
-  // Discover all tests
-  // Create main reported
-  // Spawn Suite actors
-  // Wait until all suites have completed
-  // Print result
+/// Start a test run.
+/// - Discovery phase that identifies all available test suites.
+/// - Run each suite in parallel.
+/// - Report progress and test result.
+pub fn run(level: garanti.LogLevel) -> Nil {
+  let output = console.Output(level)
+
   let suites = discovery.discover_all_suites()
+  let number_of_suites = list.length(suites)
 
   perform_analysis(suites)
+  |> list.each(fn(l) { console.info(output, l) })
 
-  io.println(
-    "Discovered " <> list.length(suites) |> int.to_string <> " suite(s).",
+  console.info(
+    output,
+    "Discovered " <> number_of_suites |> int.to_string <> " suite(s).",
   )
+
+  // Start the actor that collects progress from each suite.
+  case console_reporter.start(output, number_of_suites) {
+    Ok(started) -> {
+      console.info(
+        output,
+        "Running " <> number_of_suites |> int.to_string <> " suites...",
+      )
+
+      // Start a suite actor for each discovered suite.
+      list.each(suites, fn(s) { suite.start(s, started.data) })
+    }
+
+    _ -> {
+      console.error(output, "Failed to start the console reporter!")
+      Nil
+    }
+  }
+  Nil
 }
 
-// Analyse suites and display any warnings for the user
-fn perform_analysis(suites: List(garanti.Suite)) {
+fn perform_analysis(suites: List(garanti.Suite)) -> List(String) {
   case discovery.analyse_suites(suites) {
     [] -> ["Analysed suites: No problems found."]
     results ->
@@ -30,5 +54,4 @@ fn perform_analysis(suites: List(garanti.Suite)) {
       |> list.map(fn(msg) { string.append("[WARNING] ", msg) })
       |> list.sort(string.compare)
   }
-  |> list.each(io.println)
 }
