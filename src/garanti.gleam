@@ -30,3 +30,11 @@ pub type SuiteResult {
 pub type TestResult {
   TestResult(name: String, result: AssertionResult)
 }
+
+/// The different levels of logging output that Garanti generates.
+pub type LogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
