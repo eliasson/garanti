@@ -28,6 +28,15 @@ pub fn analyse_suites(suites: List(Suite)) -> List(AnalysisResult) {
   analyse_suites_loop(suites, set.new())
 }
 
+/// Describe the analysis result as a String.
+pub fn describe_analysis_result(result: AnalysisResult) -> String {
+  case result {
+    DuplicateSuiteName(suite_name:) ->
+      "Multiple suite are named \"" <> suite_name <> "\"."
+    EmptySuite(suite_name:) -> "Suite \"" <> suite_name <> " has no tests."
+  }
+}
+
 fn analyse_suites_loop(
   suites: List(Suite),
   names: set.Set(String),
