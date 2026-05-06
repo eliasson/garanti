@@ -26,5 +26,6 @@ pub fn four_suite() -> Suite {
 pub fn duplicate_four_suite() -> Suite {
   Suite("Another dup", [
     Test("should pass", fn() { garanti.Pass }),
+    Test("will panic", fn() { panic }),
   ])
 }
