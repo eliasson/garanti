@@ -43,3 +43,17 @@ Test discovery performs some validation on the suites and show warnings for:
 - [X] Value not equal.
 - [X] List equivalent.
 - [ ] Distinct list items.
+- [ ] Value greater than (if relevant, else failure).
+- [ ] Value greater or equal than (if relevant, else failure).
+- [ ] Value less than (if relevant, else failure).
+- [ ] Value less or equal than (if relevant, else failure).
+- [ ] List length.
+- [ ] String length.
+- [ ] String contains.
+- [ ] List contains.
+- [ ] String starts with (?)
+- [ ] String ends with (?)
+- [ ] Is Error.
+- [ ] Is Ok.
+- [ ] Is Some.
+- [ ] Is None.
