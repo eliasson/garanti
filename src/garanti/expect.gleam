@@ -1,9 +1,23 @@
+/// Assertion matchers for garanti tests.
+///
+/// Each function takes an `actual` and an `expected` value and returns a
+/// `garanti.AssertionResult` with the result.
 import garanti
 import garanti/internal/list_ext
 import gleam/list
 import gleam/string
 
-/// Match two values of the same type to be equal.
+/// Asserts that two values of the same type are equal.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_equal(1, 1)
+/// // -> Pass
+///
+/// expect.to_be_equal("hello", "world")
+/// // -> Fail("Expected \"hello\" to equal \"world\".")
+/// ```
 pub fn to_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
   case actual == expected {
     True -> garanti.Pass
@@ -20,7 +34,17 @@ pub fn to_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
   }
 }
 
-/// Match two values of the same type to NOT be equal.
+/// Asserts that two values of the same type are NOT equal.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_not_be_equal(1, 2)
+/// // -> Pass
+///
+/// expect.to_not_be_equal("hello", "hello")
+/// // -> Fail("Expected \"hello\" to NOT equal \"hello\".")
+/// ```
 pub fn to_not_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
   case actual == expected {
     False -> garanti.Pass
@@ -37,6 +61,26 @@ pub fn to_not_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
   }
 }
 
+/// Asserts that two lists contain the same elements, regardless of order.
+///
+/// Each element is matched by equality, and duplicates are considered. I.e.
+/// `[1, 1, 2]` is not equivalent to `[1, 2]`.
+///
+/// > Note: this assertion compares every element in both lists, so avoid it
+/// > for very large lists where performance matters.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_equivalent([1, 2, 3], [3, 1, 2])
+/// // -> Pass
+///
+/// expect.to_be_equivalent([1, 2], [1, 2, 3])
+/// // -> Fail("Actual value is missing element(s) [3]")
+///
+/// expect.to_be_equivalent([1, 2, 3], [1, 2])
+/// // -> Fail("Actual value has extra element(s) [3]")
+/// ```
 pub fn to_be_equivalent(
   actual: List(a),
   expected: List(a),
