@@ -120,20 +120,17 @@ fn identify_element_presence(
   acc: List(CollectionPresence(a)),
 ) -> List(CollectionPresence(a)) {
   case actual, remaining {
+    // We're done!
     [], [] -> acc
 
-    [], r -> {
-      // All elements in the remaining list is missing.
-      list.append(acc, list.map(r, Missing))
-    }
+    // All elements in the remaining list is missing.
+    [], r -> list.append(acc, list.map(r, Missing))
 
-    a, [] -> {
-      // All elements in a is extra.
-      list.append(acc, list.map(a, Extra))
-    }
+    // All elements in a is extra.
+    a, [] -> list.append(acc, list.map(a, Extra))
 
+    // Find the first occurance of the element in the remaining list.
     [head, ..tail], r -> {
-      // Find the first occurance of the element in the remaining list.
       case list.find(r, fn(rx) { rx == head }) {
         Ok(_match) -> {
           // Drop the first occurance of the element from the remaining.
