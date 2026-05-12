@@ -139,7 +139,7 @@ fn identify_element_presence(
         }
 
         _ -> {
-          // The element was not found, register a missing element and
+          // The element was not found, register an extra element and
           // continue with the same remaining elements as this call.
           let updated_acc = list.append(acc, [Extra(head)])
           identify_element_presence(tail, r, updated_acc)
