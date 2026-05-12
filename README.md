@@ -35,23 +35,11 @@ Features and limitiations that needs to be described and illustrated in a docume
 Test discovery performs some validation on the suites and show warnings for:
 
 - Suite names that are not unique
-
-```
-gleam test
-
-> Analysed suites: No problems found.
-
-   - or -
-
-gleam test
-
-> Analysed suites:
-- Multiple suites named "Foo" (recommendation is that each suite has a unique name).
-- Suite "Bar" contains no tests.
-
-```
+- Suites that have zero tests.
 
 ## Matchers needed
 
-- [ ] List equivalent.
+- [X] Value equal.
+- [X] Value not equal.
+- [X] List equivalent.
 - [ ] Distinct list items.
