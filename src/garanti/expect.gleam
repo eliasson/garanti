@@ -135,9 +135,9 @@ pub fn to_be_some(
     option.Some(a) ->
       garanti.Fail(
         string.concat([
-          "Expected Some of ",
+          "Expected ",
           string.inspect(a),
-          " to be Some of ",
+          " to be ",
           string.inspect(expected),
           ".",
         ]),
@@ -145,7 +145,7 @@ pub fn to_be_some(
     option.None ->
       garanti.Fail(
         string.concat([
-          "Expected None to be Some of ",
+          "Expected None to be ",
           string.inspect(expected),
           ".",
         ]),
