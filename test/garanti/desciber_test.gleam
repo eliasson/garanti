@@ -1,5 +1,6 @@
 import garanti
 import garanti/internal/describer
+import garanti/internal/report.{Info, Message, Plain, important, negative}
 import gleam/list
 import gleeunit/should
 
@@ -9,7 +10,15 @@ pub fn it_should_describe_test_result_test() {
   ])
   |> list.first
   |> should.be_ok
-  |> should.equal("Suite TestSuite completed (1 of 1 passed)")
+  |> should.equal(
+    Message(Info, [
+      Plain("Suite"),
+      important("TestSuite"),
+      Plain("comleted with"),
+      important("1 of 1"),
+      Plain("test(s) passed"),
+    ]),
+  )
 }
 
 pub fn it_should_describe_failing_test_result_test() {
@@ -19,7 +28,15 @@ pub fn it_should_describe_failing_test_result_test() {
   ])
   |> list.first
   |> should.be_ok
-  |> should.equal("Suite TestSuite completed (1 of 2 passed)")
+  |> should.equal(
+    Message(Info, [
+      Plain("Suite"),
+      important("TestSuite"),
+      Plain("comleted with"),
+      important("1 of 2"),
+      Plain("test(s) passed"),
+    ]),
+  )
 }
 
 pub fn it_should_describe_each_failing_test() {
@@ -31,7 +48,15 @@ pub fn it_should_describe_each_failing_test() {
   |> list.rest
   |> should.be_ok
   |> should.equal([
-    "test 1 failed with: Oh no!",
-    "test 3 failed with: No, not me too...",
+    Message(report.Error, [
+      important("test 1"),
+      negative("failed with:"),
+      Plain("Oh no!"),
+    ]),
+    Message(report.Error, [
+      important("test 3"),
+      negative("failed with:"),
+      Plain("No, not me too..."),
+    ]),
   ])
 }

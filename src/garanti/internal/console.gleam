@@ -50,7 +50,7 @@ fn print_message(out: Output, message: report.Message) -> Output {
   let line =
     message.tokens
     |> list.map(evaluate_token)
-    |> string.concat
+    |> string.join(" ")
 
   print_it(out, level_prefix(message), line)
 }

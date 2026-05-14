@@ -31,3 +31,11 @@ pub type Token {
 pub type Message {
   Message(level: Level, tokens: List(Token))
 }
+
+pub fn important(text: String) -> Token {
+  Enriched(text, [Important])
+}
+
+pub fn negative(text: String) -> Token {
+  Enriched(text, [Bold])
+}

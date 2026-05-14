@@ -8,10 +8,7 @@ import garanti/internal/describer
 import garanti/internal/report
 import gleam/erlang/process.{type Subject}
 import gleam/list
-
 import gleam/otp/actor
-
-const std_indentation = "    "
 
 /// Start a new reporter and return the subject the suite actors should publish to
 /// regarding their progress.
@@ -45,31 +42,8 @@ fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
           )
         }
 
-        [head] -> {
-          print(
-            out,
-            report.Message(report.Info, [
-              report.Plain(head),
-            ]),
-          )
-        }
-
-        [head, ..tail] -> {
-          print(
-            out,
-            report.Message(report.Info, [
-              report.Plain(head),
-            ]),
-          )
-
-          list.each(tail, fn(message) {
-            print(
-              out,
-              report.Message(report.Error, [
-                report.Enriched(std_indentation <> message, [report.Negative]),
-              ]),
-            )
-          })
+        all -> {
+          list.each(all, fn(message) { print(out, message) })
           out
         }
       }
