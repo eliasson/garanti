@@ -1,6 +1,6 @@
 /// Assertion matchers for garanti tests.
 ///
-/// Each function takes an `actual` and an `expected` value and returns a
+/// Most functions takes an `actual` and an `expected` value and returns a
 /// `garanti.AssertionResult` with the result.
 import garanti
 import garanti/internal/list_ext
