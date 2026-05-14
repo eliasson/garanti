@@ -72,7 +72,9 @@ fn perform_analysis(suites: List(garanti.Suite)) -> List(report.Message) {
       |> list.map(discovery.describe_analysis_result)
       |> list.sort(string.compare)
       |> list.map(fn(msg) {
-        report.Message(report.Warning, [report.Plain(msg)])
+        report.Message(report.Warning, [
+          report.Enriched(msg, [report.Important]),
+        ])
       })
   }
 }
