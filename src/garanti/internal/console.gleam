@@ -47,22 +47,11 @@ pub fn print(out: Output, message: report.Message) -> Output {
 }
 
 fn print_message(out: Output, message: report.Message) -> Output {
-  let line =
-    message.tokens
-    |> list.map(evaluate_token)
-    |> string.join(" ")
-
-  print_it(out, level_prefix(message), line)
-}
-
-fn level_prefix(msg: report.Message) -> String {
-  case msg.level {
-    report.Success -> "[GARANTI]"
-    report.Error -> "  [ERROR]"
-    report.Warning -> "   [WARN]"
-    report.Info -> "   [INFO]"
-    report.Debug -> "  [DEBUG]"
-  }
+  message.tokens
+  |> list.map(evaluate_token)
+  |> string.join(" ")
+  |> println()
+  out
 }
 
 fn evaluate_token(token: report.Token) -> String {
@@ -102,14 +91,6 @@ fn t(text: String, effects: List(report.Effect)) -> String {
   }
 }
 
-fn print_it(out: Output, prefix: String, line: String) -> Output {
-  // Likely generating some allocations, investigate string trees.
-  string.append(prefix <> " ", line)
-  |> println()
-
-  out
-}
-
 fn println(line: String) {
-  io.println(line)
+  io.println("  " <> line)
 }
