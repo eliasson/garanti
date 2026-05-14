@@ -6,6 +6,7 @@ import garanti
 import garanti/internal/console.{Info, Success, Warning, print}
 import garanti/internal/describer
 import gleam/erlang/process.{type Subject}
+import gleam/list
 
 import gleam/otp/actor
 
@@ -27,7 +28,23 @@ type State {
 fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
   case msg {
     garanti.SuiteComplete(suite_name:, results:) -> {
-      print(out, Info(describer.suite_results(suite_name, results)))
+      case describer.suite_results(suite_name, results) {
+        [] -> {
+          // This should not happen due to emtpy suite (since these are not run), when
+          // will this occur? Timeouts?
+          print(out, Warning("Suite " <> suite_name <> " contained no result!"))
+        }
+
+        [head] -> {
+          print(out, Info(head))
+        }
+
+        [head, ..tail] -> {
+          print(out, Info(head))
+          list.each(tail, fn(message) { print(out, Info(message)) })
+          out
+        }
+      }
 
       State(state.number_suites - 1)
       |> are_we_done_yet(out)
