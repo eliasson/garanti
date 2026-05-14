@@ -3,12 +3,14 @@
 // the `./example/` directory.
 
 import garanti
-import garanti/internal/console.{Info, Success, Warning, print}
+import garanti/internal/console.{Error, Info, Success, Warning, print}
 import garanti/internal/describer
 import gleam/erlang/process.{type Subject}
 import gleam/list
 
 import gleam/otp/actor
+
+const std_indentation = "    "
 
 /// Start a new reporter and return the subject the suite actors should publish to
 /// regarding their progress.
@@ -41,7 +43,9 @@ fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
 
         [head, ..tail] -> {
           print(out, Info(head))
-          list.each(tail, fn(message) { print(out, Info(message)) })
+          list.each(tail, fn(message) {
+            print(out, Error(std_indentation <> message))
+          })
           out
         }
       }

@@ -9,24 +9,31 @@ pub fn suite_results(
   suite_name: String,
   results: List(garanti.TestResult),
 ) -> List(String) {
-  let #(pass, total) =
-    list.fold(results, #(0, 0), fn(acc, tr) {
-      let p = case tr {
-        garanti.TestResult(result: garanti.Pass, ..) -> acc.0 + 1
-        _ -> acc.0
+  let #(failures, total_count) =
+    list.fold(results, #([], 0), fn(acc, tr) {
+      case tr {
+        garanti.TestResult(result: garanti.Pass, ..) -> {
+          #(acc.0, acc.1 + 1)
+        }
+        garanti.TestResult(name:, result: garanti.Fail(failure)) -> {
+          #(
+            list.append(acc.0, [name <> " failed with: " <> failure]),
+            acc.1 + 1,
+          )
+        }
       }
-      #(p, acc.1 + 1)
     })
 
+  let pass_count = total_count - list.length(failures)
   let overall =
     "Suite "
     <> suite_name
     <> " completed"
     <> " ("
-    <> int.to_string(pass)
+    <> int.to_string(pass_count)
     <> " of "
-    <> int.to_string(total)
+    <> int.to_string(total_count)
     <> " passed)"
 
-  [overall]
+  [overall, ..failures]
 }
