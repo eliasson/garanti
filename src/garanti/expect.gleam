@@ -5,6 +5,7 @@
 import garanti
 import garanti/internal/list_ext
 import gleam/list
+import gleam/option
 import gleam/string
 
 /// Asserts that two values of the same type are equal.
@@ -111,6 +112,44 @@ pub fn to_be_equivalent(
 
       garanti.Fail("Actual value " <> msg)
     }
+  }
+}
+
+/// Asserts that the actual value is a Some of an expected value.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_some(option.Option(1), 1)
+/// // -> Pass
+///
+/// expect.to_be_some(option.None, "world")
+/// // -> Fail("Expected None to be Some of \"world\".")
+/// ```
+pub fn to_be_some(
+  actual: option.Option(a),
+  expected: a,
+) -> garanti.AssertionResult {
+  case actual {
+    option.Some(a) if a == expected -> garanti.Pass
+    option.Some(a) ->
+      garanti.Fail(
+        string.concat([
+          "Expected Some of ",
+          string.inspect(a),
+          " to be Some of ",
+          string.inspect(expected),
+          ".",
+        ]),
+      )
+    option.None ->
+      garanti.Fail(
+        string.concat([
+          "Expected None to be Some of ",
+          string.inspect(expected),
+          ".",
+        ]),
+      )
   }
 }
 

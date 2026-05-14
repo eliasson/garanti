@@ -55,5 +55,5 @@ Test discovery performs some validation on the suites and show warnings for:
 - [ ] String ends with (?)
 - [ ] Is Error.
 - [ ] Is Ok.
-- [ ] Is Some.
+- [X] Is Some.
 - [ ] Is None.
