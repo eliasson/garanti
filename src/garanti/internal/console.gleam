@@ -69,6 +69,7 @@ fn evaluate_token(token: report.Token) -> String {
   case token {
     report.Plain(text) -> text
     report.Enriched(text, effects) -> t(text, effects)
+    report.Indent -> "  "
   }
 }
 

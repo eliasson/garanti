@@ -51,6 +51,8 @@ fn suite_completion(total_count: Int, failures: List(report.Message)) {
 fn failed_test(name: String, reason: String) -> List(report.Message) {
   [
     report.Message(report.Error, [
+      report.Indent,
+      report.Enriched("Test", [report.Secondary]),
       report.Enriched(name, [report.Name]),
       report.Enriched("failed with:", [report.Negative, report.Bold]),
       report.Plain(reason),

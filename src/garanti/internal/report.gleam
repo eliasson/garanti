@@ -29,6 +29,8 @@ pub type Token {
   Plain(text: String)
   /// A string with optional effects. Not all effects can be combined (such as combining colors).
   Enriched(text: String, effects: List(Effect))
+  /// Indent the output (if applicable).
+  Indent
 }
 
 /// A message that is part of a test report.
