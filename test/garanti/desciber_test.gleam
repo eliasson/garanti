@@ -1,6 +1,6 @@
 import garanti
 import garanti/internal/describer
-import garanti/internal/report.{Enriched, Info, Message, Plain}
+import garanti/internal/report.{Enriched, Indent, Info, Message, Plain}
 import gleam/list
 import gleeunit/should
 
@@ -39,7 +39,7 @@ pub fn it_should_describe_failing_test_result_test() {
   )
 }
 
-pub fn it_should_describe_each_failing_test() {
+pub fn it_should_describe_each_test() {
   describer.suite_results("TestSuite", [
     garanti.TestResult("test 1", garanti.Fail("Oh no!")),
     garanti.TestResult("test 2", garanti.Pass),
@@ -49,11 +49,22 @@ pub fn it_should_describe_each_failing_test() {
   |> should.be_ok
   |> should.equal([
     Message(report.Error, [
+      Indent,
+      Enriched("Test", [report.Secondary]),
       Enriched("test 1", [report.Name]),
       Enriched("failed with:", [report.Negative, report.Bold]),
       Plain("Oh no!"),
     ]),
+    Message(report.Info, [
+      Indent,
+      Enriched("Test", [report.Secondary]),
+      Enriched("test 2", [report.Name]),
+      Enriched("completed", [report.Secondary]),
+      Enriched("successfully", [report.Positive, report.Bold]),
+    ]),
     Message(report.Error, [
+      Indent,
+      Enriched("Test", [report.Secondary]),
       Enriched("test 3", [report.Name]),
       Enriched("failed with:", [report.Negative, report.Bold]),
       Plain("No, not me too..."),
