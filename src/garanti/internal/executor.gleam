@@ -15,13 +15,9 @@ pub type ExecutionResult {
 
 // TODO We should add some sort of TestContext that can carry things like:
 // - Timeout limit
-// - Log level
 
 /// Execute the given test in isolation and return the result
 pub fn run(test_fn: fn() -> garanti.AssertionResult) -> ExecutionResult {
-  // logging.configure()
-  // logging.set_level(logging.Debug)
-
   log(Debug, "Preparing test for execution")
 
   let test_subject = process.new_subject()
