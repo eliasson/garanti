@@ -79,9 +79,22 @@ fn t(text: String, effects: List(report.Effect)) -> String {
     [] -> text
     [head, ..tail] -> {
       case head {
+        // Green
         report.Positive -> "\u{001b}[32m" <> t(text, tail) <> ansi_reset
+
+        // Red
         report.Negative -> "\u{001b}[31m" <> t(text, tail) <> ansi_reset
+
+        // Yellow
         report.Important -> "\u{001b}[33m" <> t(text, tail) <> ansi_reset
+
+        // Bright white
+        report.Name -> "\u{001b}[97m" <> t(text, tail) <> ansi_reset
+
+        // Dim white
+        report.Secondary -> "\u{001b}[2m" <> t(text, tail) <> ansi_reset
+
+        // Just bold
         report.Bold -> "\u{001b}[1m" <> t(text, tail) <> ansi_reset
       }
     }

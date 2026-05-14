@@ -13,10 +13,14 @@ pub type Effect {
   Positive
   /// Negative outcomes, such as test failures.
   Negative
-  /// Imporant parts of a message, such as test or suite name.
+  /// Not a failure, but something is not right.
   Important
+  /// Imporant parts of a message, such as test or suite name.
+  Name
   /// Adds additional emphasis to a piece of text
   Bold
+  /// Supportive text, fully readable but dot not compete for attention.
+  Secondary
 }
 
 /// The different types of tokens that can be used to construct a message.
@@ -34,8 +38,4 @@ pub type Message {
 
 pub fn important(text: String) -> Token {
   Enriched(text, [Important])
-}
-
-pub fn negative(text: String) -> Token {
-  Enriched(text, [Bold])
 }

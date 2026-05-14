@@ -36,7 +36,7 @@ fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
             out,
             report.Message(report.Warning, [
               report.Plain("Suite"),
-              report.Enriched(suite_name, [report.Important, report.Bold]),
+              report.Enriched(suite_name, [report.Name, report.Bold]),
               report.Plain("contained no result!"),
             ]),
           )
@@ -57,7 +57,7 @@ fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
         out,
         report.Message(report.Warning, [
           report.Plain("Suite"),
-          report.Enriched(suite_name, [report.Important, report.Bold]),
+          report.Enriched(suite_name, [report.Name, report.Bold]),
           report.Plain("was cancelled"),
         ]),
       )

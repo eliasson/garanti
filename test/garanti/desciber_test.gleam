@@ -1,6 +1,6 @@
 import garanti
 import garanti/internal/describer
-import garanti/internal/report.{Info, Message, Plain, important, negative}
+import garanti/internal/report.{Enriched, Info, Message, Plain}
 import gleam/list
 import gleeunit/should
 
@@ -12,11 +12,11 @@ pub fn it_should_describe_test_result_test() {
   |> should.be_ok
   |> should.equal(
     Message(Info, [
-      Plain("Suite"),
-      important("TestSuite"),
-      Plain("comleted with"),
-      important("1 of 1"),
-      Plain("test(s) passed"),
+      Enriched("Suite", [report.Secondary]),
+      Enriched("TestSuite", [report.Name]),
+      Enriched("completed with", [report.Secondary]),
+      Enriched("1 of 1", [report.Name]),
+      Enriched("test(s) passed", [report.Secondary]),
     ]),
   )
 }
@@ -30,11 +30,11 @@ pub fn it_should_describe_failing_test_result_test() {
   |> should.be_ok
   |> should.equal(
     Message(Info, [
-      Plain("Suite"),
-      important("TestSuite"),
-      Plain("comleted with"),
-      important("1 of 2"),
-      Plain("test(s) passed"),
+      Enriched("Suite", [report.Secondary]),
+      Enriched("TestSuite", [report.Name]),
+      Enriched("completed with", [report.Secondary]),
+      Enriched("1 of 2", [report.Name]),
+      Enriched("test(s) passed", [report.Secondary]),
     ]),
   )
 }
@@ -49,13 +49,13 @@ pub fn it_should_describe_each_failing_test() {
   |> should.be_ok
   |> should.equal([
     Message(report.Error, [
-      important("test 1"),
-      negative("failed with:"),
+      Enriched("test 1", [report.Name]),
+      Enriched("failed with:", [report.Negative, report.Bold]),
       Plain("Oh no!"),
     ]),
     Message(report.Error, [
-      important("test 3"),
-      negative("failed with:"),
+      Enriched("test 3", [report.Name]),
+      Enriched("failed with:", [report.Negative, report.Bold]),
       Plain("No, not me too..."),
     ]),
   ])

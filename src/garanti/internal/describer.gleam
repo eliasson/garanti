@@ -24,8 +24,8 @@ pub fn suite_results(
 
   let overall =
     report.Message(report.Info, [
-      report.Plain("Suite"),
-      report.important(suite_name),
+      report.Enriched("Suite", [report.Secondary]),
+      report.Enriched(suite_name, [report.Name]),
       ..suite_completion(total_count, failures)
     ])
 
@@ -39,19 +39,20 @@ fn suite_completion(total_count: Int, failures: List(report.Message)) {
   //   completed successfully with 3 tests
   //   completed with 3 failures
   [
-    report.Plain("comleted with"),
-    report.important(
+    report.Enriched("completed with", [report.Secondary]),
+    report.Enriched(
       int.to_string(pass_count) <> " of " <> int.to_string(total_count),
+      [report.Name],
     ),
-    report.Plain("test(s) passed"),
+    report.Enriched("test(s) passed", [report.Secondary]),
   ]
 }
 
 fn failed_test(name: String, reason: String) -> List(report.Message) {
   [
     report.Message(report.Error, [
-      report.important(name),
-      report.negative("failed with:"),
+      report.Enriched(name, [report.Name]),
+      report.Enriched("failed with:", [report.Negative, report.Bold]),
       report.Plain(reason),
     ]),
   ]
