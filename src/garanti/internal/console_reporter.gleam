@@ -3,8 +3,9 @@
 // the `./example/` directory.
 
 import garanti
-import garanti/internal/console.{Error, Info, Success, Warning, print}
+import garanti/internal/console.{print}
 import garanti/internal/describer
+import garanti/internal/report
 import gleam/erlang/process.{type Subject}
 import gleam/list
 
@@ -34,17 +35,40 @@ fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
         [] -> {
           // This should not happen due to emtpy suite (since these are not run), when
           // will this occur? Timeouts?
-          print(out, Warning("Suite " <> suite_name <> " contained no result!"))
+          print(
+            out,
+            report.Message(report.Warning, [
+              report.Plain("Suite"),
+              report.Enriched(suite_name, [report.Important, report.Bold]),
+              report.Plain("contained no result!"),
+            ]),
+          )
         }
 
         [head] -> {
-          print(out, Info(head))
+          print(
+            out,
+            report.Message(report.Info, [
+              report.Plain(head),
+            ]),
+          )
         }
 
         [head, ..tail] -> {
-          print(out, Info(head))
+          print(
+            out,
+            report.Message(report.Info, [
+              report.Plain(head),
+            ]),
+          )
+
           list.each(tail, fn(message) {
-            print(out, Error(std_indentation <> message))
+            print(
+              out,
+              report.Message(report.Error, [
+                report.Enriched(std_indentation <> message, [report.Negative]),
+              ]),
+            )
           })
           out
         }
@@ -55,7 +79,14 @@ fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
     }
 
     garanti.SuiteCancelled(suite_name) -> {
-      print(out, Warning("Suite " <> suite_name <> " was cancelled"))
+      print(
+        out,
+        report.Message(report.Warning, [
+          report.Plain("Suite"),
+          report.Enriched(suite_name, [report.Important, report.Bold]),
+          report.Plain("was cancelled"),
+        ]),
+      )
 
       State(state.number_suites - 1)
       |> are_we_done_yet(out)
@@ -66,7 +97,12 @@ fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
 fn are_we_done_yet(new_state: State, out: console.Output) {
   case new_state.number_suites {
     0 -> {
-      print(out, Success("All suites run!"))
+      print(
+        out,
+        report.Message(report.Success, [
+          report.Enriched("All suites run!", [report.Positive, report.Bold]),
+        ]),
+      )
       actor.stop()
     }
 

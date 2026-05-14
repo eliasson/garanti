@@ -1,11 +1,9 @@
 import garanti
+import garanti/internal/report
 import gleam/io
 import gleam/list
 import gleam/string
 
-/// Console printing
-/// - Currently wraps the io module only.
-/// - Extend with ANSI colours and graphics for tests result.
 pub type Output {
   Output(level: garanti.LogLevel)
 }
@@ -18,37 +16,75 @@ pub type Message {
   Debug(String)
 }
 
-pub fn print_all(out: Output, messages: List(Message)) -> Output {
+pub fn print_all(out: Output, messages: List(report.Message)) -> Output {
   list.each(messages, fn(m) { print(out, m) })
   out
 }
 
-const success = "[GARANTI]"
+pub fn print(out: Output, message: report.Message) -> Output {
+  case out.level, message.level {
+    // Always print successful messages.
+    _, report.Success -> print_message(out, message)
 
-const error = "  [ERROR]"
+    // Print only errors.
+    garanti.Error, report.Error -> print_message(out, message)
 
-const warn = "   [WARN]"
+    // Print errors and warnings.
+    garanti.Warning, report.Error -> print_message(out, message)
+    garanti.Warning, report.Warning -> print_message(out, message)
 
-const info = "   [INFO]"
+    // Print errors, warnings and info.
+    garanti.Info, report.Error -> print_message(out, message)
+    garanti.Info, report.Warning -> print_message(out, message)
+    garanti.Info, report.Info -> print_message(out, message)
 
-const debug = "  [DEBUG]"
+    // Print all messages.
+    garanti.Debug, _ -> print_message(out, message)
 
-pub fn print(out: Output, message: Message) -> Output {
-  case message, out.level {
-    Success(line), _ -> print_it(out, bold(green(success)), line)
-
-    Error(line), _ -> print_it(out, red(error), line)
-
-    Warning(line), garanti.Warning -> print_it(out, yellow(warn), line)
-    Warning(line), garanti.Info -> print_it(out, yellow(warn), line)
-    Warning(line), garanti.Debug -> print_it(out, yellow(warn), line)
-
-    Info(line), garanti.Info -> print_it(out, info, line)
-    Info(line), garanti.Debug -> print_it(out, info, line)
-
-    Debug(line), garanti.Debug -> print_it(out, debug, line)
-
+    // Print nothing.
     _, _ -> out
+  }
+}
+
+fn print_message(out: Output, message: report.Message) -> Output {
+  let line =
+    message.tokens
+    |> list.map(evaluate_token)
+    |> string.concat
+
+  print_it(out, level_prefix(message), line)
+}
+
+fn level_prefix(msg: report.Message) -> String {
+  case msg.level {
+    report.Success -> "[GARANTI]"
+    report.Error -> "  [ERROR]"
+    report.Warning -> "   [WARN]"
+    report.Info -> "   [INFO]"
+    report.Debug -> "  [DEBUG]"
+  }
+}
+
+fn evaluate_token(token: report.Token) -> String {
+  case token {
+    report.Plain(text) -> text
+    report.Enriched(text, effects) -> t(text, effects)
+  }
+}
+
+const ansi_reset = "\u{001b}[0m"
+
+fn t(text: String, effects: List(report.Effect)) -> String {
+  case effects {
+    [] -> text
+    [head, ..tail] -> {
+      case head {
+        report.Positive -> "\u{001b}[32m" <> t(text, tail) <> ansi_reset
+        report.Negative -> "\u{001b}[31m" <> t(text, tail) <> ansi_reset
+        report.Important -> "\u{001b}[33m" <> t(text, tail) <> ansi_reset
+        report.Bold -> "\u{001b}[1m" <> t(text, tail) <> ansi_reset
+      }
+    }
   }
 }
 
@@ -62,38 +98,4 @@ fn print_it(out: Output, prefix: String, line: String) -> Output {
 
 fn println(line: String) {
   io.println(line)
-}
-
-const ansi_reset = "\u{001b}[0m"
-
-type AnsiEffect {
-  Green
-  Yellow
-  Red
-  Bold
-}
-
-fn green(text: String) -> String {
-  ansi(Green, text)
-}
-
-fn yellow(text: String) -> String {
-  ansi(Yellow, text)
-}
-
-fn red(text: String) -> String {
-  ansi(Red, text)
-}
-
-fn bold(text: String) -> String {
-  ansi(Bold, text)
-}
-
-fn ansi(effect: AnsiEffect, text: String) -> String {
-  case effect {
-    Green -> "\u{001b}[32m" <> text <> ansi_reset
-    Yellow -> "\u{001b}[33m" <> text <> ansi_reset
-    Red -> "\u{001b}[31m" <> text <> ansi_reset
-    Bold -> "\u{001b}[1m" <> text <> ansi_reset
-  }
 }
