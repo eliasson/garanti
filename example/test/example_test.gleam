@@ -11,7 +11,7 @@ pub fn main() -> Nil {
 pub fn hello_world_suite() -> Suite {
   Suite("Suite one", [
     Test("1 + 1 should equal 2", fn() { expect.to_be_equal(1 + 1, 2) }),
-    Test("should also pass", fn() { exoect.to_be_none(option.None) }),
+    Test("should also pass", fn() { expect.to_be_none(option.None) }),
   ])
 }
 
