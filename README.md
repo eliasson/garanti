@@ -56,4 +56,4 @@ Test discovery performs some validation on the suites and show warnings for:
 - [ ] Is Error.
 - [ ] Is Ok.
 - [X] Is Some.
-- [ ] Is None.
+- [X] Is None.

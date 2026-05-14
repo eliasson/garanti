@@ -153,6 +153,31 @@ pub fn to_be_some(
   }
 }
 
+/// Assert that the given option is None.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_none(option.None)
+/// // -> Pass
+///
+/// expect.to_be_none(option.Some("hello"))
+/// // -> Fail("Expected \"world\" to be None.")
+/// ```
+pub fn to_be_none(actual: option.Option(a)) -> garanti.AssertionResult {
+  case actual {
+    option.None -> garanti.Pass
+    option.Some(a) ->
+      garanti.Fail(
+        string.concat([
+          "Expected ",
+          string.inspect(a),
+          " to be None.",
+        ]),
+      )
+  }
+}
+
 fn identify_element_presence(
   actual: List(a),
   remaining: List(a),
