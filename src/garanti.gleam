@@ -6,8 +6,10 @@ pub type AssertionResult {
   Pass
   /// The test failed, one or more assertion(s) was NOT fulfilled.
   Fail(String)
+  Timeout
 }
 
+/// Test did not finish executing within the maximum allowed time slot.
 /// The top level structure for any tests is a suite. All tests must belong to ONE suite,
 /// there are no free-form tests.
 pub type Suite {

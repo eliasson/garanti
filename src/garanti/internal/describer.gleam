@@ -19,6 +19,9 @@ pub fn suite_results(
         garanti.TestResult(name:, result: garanti.Fail(reason)) -> {
           #(failed_test(name, reason), 1)
         }
+        garanti.TestResult(name:, result: garanti.Timeout) -> {
+          #(timeout_test(name), 1)
+        }
       }
 
       #(list.append(acc.0, msg), acc.1 + 1, acc.2 + fail)
@@ -70,6 +73,17 @@ fn successful_test(name: String) -> List(report.Message) {
       report.Enriched(name, [report.Name]),
       report.Enriched("completed", [report.Secondary]),
       report.Enriched("successfully", [report.Positive, report.Bold]),
+    ]),
+  ]
+}
+
+fn timeout_test(name: String) -> List(report.Message) {
+  [
+    report.Message(report.Info, [
+      report.Indent,
+      report.Enriched("Test", [report.Secondary]),
+      report.Enriched(name, [report.Name]),
+      report.Enriched("timed out", [report.Negative, report.Bold]),
     ]),
   ]
 }

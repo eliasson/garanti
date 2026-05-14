@@ -1,6 +1,7 @@
 import garanti.{type Suite, Suite, Test}
 import garanti/expect
 import garanti/runner
+import gleam/erlang/process
 import gleam/option
 
 pub fn main() -> Nil {
@@ -19,5 +20,9 @@ pub fn second_suite() -> Suite {
   Suite("Suite 2", [
     Test("should pass", fn() { garanti.Pass }),
     Test("should fail", fn() { expect.to_be_none(option.Some("Sneaky")) }),
+    Test("should timeout", fn() {
+      process.sleep(10_000)
+      expect.to_be_none(option.Some("Should not reach this"))
+    }),
   ])
 }

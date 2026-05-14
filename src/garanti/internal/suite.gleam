@@ -118,7 +118,9 @@ fn execution_result_to_test_result(
   let result = case er {
     executor.Executed(garanti.Pass) -> garanti.Pass
     executor.Executed(garanti.Fail(reason)) -> garanti.Fail(reason)
-    _ -> garanti.Fail("Unknown test error")
+    executor.Executed(garanti.Timeout) -> garanti.Timeout
+    executor.ExecutionTimeout -> garanti.Timeout
+    executor.ExecutionFailure(msg) -> garanti.Fail(msg)
   }
 
   garanti.TestResult(t.name, result)

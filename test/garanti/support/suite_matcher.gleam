@@ -65,6 +65,7 @@ pub fn have_passing_tests(
         case r.result {
           garanti.Pass -> True
           garanti.Fail(_) -> False
+          garanti.Timeout -> False
         }
       })
     }
@@ -97,6 +98,7 @@ pub fn have_failing_tests(
         case r.result {
           garanti.Pass -> False
           garanti.Fail(_) -> True
+          garanti.Timeout -> True
         }
       })
     }

@@ -11,6 +11,8 @@ pub type ExecutionResult {
   Executed(garanti.AssertionResult)
   /// The test could not successfully be executed.
   ExecutionFailure(String)
+  /// The test did not finish in the maxium time allowed.
+  ExecutionTimeout
 }
 
 // TODO We should add some sort of TestContext that can carry things like:
@@ -60,7 +62,7 @@ pub fn run(test_fn: fn() -> garanti.AssertionResult) -> ExecutionResult {
 
     Error(Nil) -> {
       log(Debug, "Test timed out")
-      ExecutionFailure("Test execution timed out")
+      ExecutionTimeout
     }
   }
 }
