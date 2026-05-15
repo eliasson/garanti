@@ -2,7 +2,7 @@ import garanti.{Suite, Test}
 import garanti/expect
 import gleam/option
 
-pub fn expect_some_suite() {
+pub fn to_be_some_suite() {
   Suite("When matching to_be_some", [
     Test("it should pass when actual is Some of expected", fn() {
       expect.to_be_some(option.Some(12), 12)
