@@ -13,11 +13,12 @@ import gleam/otp/actor
 /// Start a new reporter and return the subject the suite actors should publish to
 /// regarding their progress.
 pub fn start(
+  done_sub: Subject(Nil),
   out: console.Output,
   number_suites: Int,
 ) -> Result(actor.Started(Subject(garanti.SuiteResult)), actor.StartError) {
   actor.new(State(number_suites))
-  |> actor.on_message(fn(s, m) { handle_message(out, s, m) })
+  |> actor.on_message(fn(s, m) { handle_message(out, s, m, done_sub) })
   |> actor.start()
 }
 
@@ -25,7 +26,12 @@ type State {
   State(number_suites: Int)
 }
 
-fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
+fn handle_message(
+  out: console.Output,
+  state: State,
+  msg: garanti.SuiteResult,
+  done_sub: Subject(Nil),
+) {
   case msg {
     garanti.SuiteComplete(suite_name:, results:) -> {
       case describer.suite_results(suite_name, results) {
@@ -49,7 +55,7 @@ fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
       }
 
       State(state.number_suites - 1)
-      |> are_we_done_yet(out)
+      |> are_we_done_yet(out, done_sub)
     }
 
     garanti.SuiteCancelled(suite_name) -> {
@@ -63,12 +69,16 @@ fn handle_message(out: console.Output, state: State, msg: garanti.SuiteResult) {
       )
 
       State(state.number_suites - 1)
-      |> are_we_done_yet(out)
+      |> are_we_done_yet(out, done_sub)
     }
   }
 }
 
-fn are_we_done_yet(new_state: State, out: console.Output) {
+fn are_we_done_yet(
+  new_state: State,
+  out: console.Output,
+  done_sub: Subject(Nil),
+) {
   case new_state.number_suites {
     0 -> {
       print(
@@ -77,6 +87,8 @@ fn are_we_done_yet(new_state: State, out: console.Output) {
           report.Enriched("All suites run!", [report.Positive, report.Bold]),
         ]),
       )
+      //Send a message to the done subject to indicate that all suites are run.
+      process.send(done_sub, Nil)
       actor.stop()
     }
 

@@ -4,7 +4,9 @@ import garanti/internal/console_reporter
 import garanti/internal/discovery
 import garanti/internal/report
 import garanti/internal/suite
+import gleam/erlang/process
 import gleam/int
+import gleam/io
 import gleam/list
 import gleam/string
 
@@ -33,8 +35,11 @@ pub fn run(level: garanti.LogLevel) -> Nil {
   let tests_to_run = list.filter(suites, fn(s) { !list.is_empty(s.tests) })
   let nr_tests_to_run = list.length(tests_to_run)
 
+  // Create a subject to be notified when all suits have run.
+  let done_sub = process.new_subject()
+
   // Start the actor that collects progress from each suite.
-  case console_reporter.start(output, nr_tests_to_run) {
+  case console_reporter.start(done_sub, output, nr_tests_to_run) {
     Ok(started) -> {
       print(
         report.Message(report.Info, [
@@ -57,7 +62,15 @@ pub fn run(level: garanti.LogLevel) -> Nil {
       Nil
     }
   }
-  Nil
+
+  // Wait for all suites to be run until terminating
+  case process.receive(done_sub, within: 10 * 60 * 1000) {
+    Ok(_) -> Nil
+    _ -> {
+      io.println("Test runner timed out!")
+      Nil
+    }
+  }
 }
 
 fn perform_analysis(suites: List(garanti.Suite)) -> List(report.Message) {
