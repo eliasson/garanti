@@ -1,5 +1,6 @@
-import gleeunit
+import garanti
+import garanti/runner
 
 pub fn main() -> Nil {
-  gleeunit.main()
+  runner.run(garanti.Debug)
 }

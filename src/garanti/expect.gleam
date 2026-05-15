@@ -178,6 +178,40 @@ pub fn to_be_none(actual: option.Option(a)) -> garanti.AssertionResult {
   }
 }
 
+/// Asserts that the actual value is `Ok`, then runs further assertions on the
+/// inner value via a callback.
+///
+/// Use this when you want to both verify a `Result` is `Ok` and make
+/// additional assertions on the unwrapped value in a single expression.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_ok_then(Ok(42), fn(n) { expect.to_be_equal(n, 42) })
+/// // -> Pass
+///
+/// // Or alternative
+/// use value <- expect.to_be_ok_then(Ok(42))
+/// expect.to_be_equal(value, 42)
+/// // -> Pass
+///
+/// expect.to_be_ok_then(Ok(42), fn(n) { expect.to_be_equal(n, 0) })
+/// // -> Fail("Expected 42 to equal 0.")
+/// ```
+pub fn to_be_ok_then(
+  actual: Result(a, b),
+  t: fn(a) -> garanti.AssertionResult,
+) -> garanti.AssertionResult {
+  case actual {
+    Ok(res) -> t(res)
+    Error(err) ->
+      garanti.Fail(
+        "Expected actual to be Ok but it was an Error of "
+        <> string.inspect(err),
+      )
+  }
+}
+
 fn identify_element_presence(
   actual: List(a),
   remaining: List(a),
