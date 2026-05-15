@@ -1,19 +1,23 @@
-import garanti
+import garanti.{Suite, Test}
+import garanti/expect
 import garanti/internal/executor
 import garanti/support/tests
-import gleeunit/should
 
-pub fn it_should_pass_passing_test_test() {
-  executor.run(tests.passing_assert)
-  |> should.equal(executor.Executed(garanti.Pass))
-}
+pub fn executor_suite() {
+  Suite("When executing tests", [
+    Test("it should pass a passing tests", fn() {
+      executor.run(tests.passing_assert)
+      |> expect.to_be_equal(executor.Executed(garanti.Pass))
+    }),
 
-pub fn it_should_fail_failing_test_test() {
-  executor.run(tests.failing_assert)
-  |> should.equal(executor.Executed(garanti.Fail("set up to fail")))
-}
+    Test("it should fail a failing test", fn() {
+      executor.run(tests.failing_assert)
+      |> expect.to_be_equal(executor.Executed(garanti.Fail("set up to fail")))
+    }),
 
-pub fn it_should_fail_execution_for_paniciing_test_test() {
-  executor.run(tests.panicking_assert)
-  |> should.equal(executor.ExecutionFailure("Test panicked"))
+    Test("it should fail execution for a panicking test", fn() {
+      executor.run(tests.panicking_assert)
+      |> expect.to_be_equal(executor.ExecutionFailure("Test panicked"))
+    }),
+  ])
 }
