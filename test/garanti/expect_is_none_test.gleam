@@ -1,19 +1,22 @@
-import garanti
+import garanti.{Suite, Test}
 import garanti/expect
 import gleam/option
-import gleeunit/should
 
-pub fn it_should_be_none_int_fail_test() {
-  expect.to_be_none(option.Some(12))
-  |> should.equal(garanti.Fail("Expected 12 to be None."))
-}
+pub fn to_be_none_suite() {
+  Suite("When matching to_be_none", [
+    Test("it should fail when actual is Some", fn() {
+      expect.to_be_none(option.Some(12))
+      |> expect.to_be_equal(garanti.Fail("Expected 12 to be None."))
+    }),
 
-pub fn it_should_be_none_pass_test() {
-  expect.to_be_none(option.None)
-  |> should.equal(garanti.Pass)
-}
+    Test("it should pass when actual is None", fn() {
+      expect.to_be_none(option.None)
+      |> expect.to_be_equal(garanti.Pass)
+    }),
 
-pub fn it_should_be_some_string_fail_test() {
-  expect.to_be_none(option.Some("two"))
-  |> should.equal(garanti.Fail("Expected \"two\" to be None."))
+    Test("it should fail when actual is Some of a string", fn() {
+      expect.to_be_none(option.Some("two"))
+      |> expect.to_be_equal(garanti.Fail("Expected \"two\" to be None."))
+    }),
+  ])
 }
