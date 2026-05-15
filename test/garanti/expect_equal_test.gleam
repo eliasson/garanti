@@ -1,45 +1,54 @@
-import garanti
+import garanti.{Suite, Test}
 import garanti/expect
-import gleeunit/should
 
-pub fn it_should_be_equal_int_pass_test() {
-  expect.to_be_equal(12, 12)
-  |> should.equal(garanti.Pass)
+pub fn to_be_equal_suite() {
+  Suite("When matching to_be_equal", [
+    Test("it should pass when integers are equal", fn() {
+      expect.to_be_equal(12, 12)
+      |> expect.to_be_equal(garanti.Pass)
+    }),
+
+    Test("it should pass when strings are equal", fn() {
+      expect.to_be_equal("abrakadabra", "abrakadabra")
+      |> expect.to_be_equal(garanti.Pass)
+    }),
+
+    Test("it should fail when intergers are NOT equal", fn() {
+      expect.to_be_equal(12, 22)
+      |> expect.to_be_equal(garanti.Fail("Expected 12 to equal 22."))
+    }),
+
+    Test("it should fail when strings are NOT equal", fn() {
+      expect.to_be_equal("abrakadabra", "simsalabim")
+      |> expect.to_be_equal(garanti.Fail(
+        "Expected \"abrakadabra\" to equal \"simsalabim\".",
+      ))
+    }),
+  ])
 }
 
-pub fn it_should_be_equal_string_pass_test() {
-  expect.to_be_equal("abrakadabra", "abrakadabra")
-  |> should.equal(garanti.Pass)
-}
+pub fn to_not_be_equal_suite() {
+  Suite("When matching to_not_be_equal", [
+    Test("it should pass when integers are NOT equal", fn() {
+      expect.to_not_be_equal(12, 44)
+      |> expect.to_be_equal(garanti.Pass)
+    }),
 
-pub fn it_should_be_equal_int_fail_test() {
-  expect.to_be_equal(12, 22)
-  |> should.equal(garanti.Fail("Expected 12 to equal 22."))
-}
+    Test("it should pass when strings are NOT equal", fn() {
+      expect.to_not_be_equal("Abba", "Queen")
+      |> expect.to_be_equal(garanti.Pass)
+    }),
 
-pub fn it_should_be_equal_string_fail_test() {
-  expect.to_be_equal("abrakadabra", "simsalabim")
-  |> should.equal(garanti.Fail(
-    "Expected \"abrakadabra\" to equal \"simsalabim\".",
-  ))
-}
+    Test("it should fail when integers are equal", fn() {
+      expect.to_not_be_equal(12, 12)
+      |> expect.to_be_equal(garanti.Fail("Expected 12 to NOT equal 12."))
+    }),
 
-pub fn it_should_not_be_equal_int_pass_test() {
-  expect.to_not_be_equal(12, 44)
-  |> should.equal(garanti.Pass)
-}
-
-pub fn it_should_not_be_equal_string_pass_test() {
-  expect.to_not_be_equal("Abba", "Queen")
-  |> should.equal(garanti.Pass)
-}
-
-pub fn it_should_not_be_equal_int_fail_test() {
-  expect.to_not_be_equal(12, 12)
-  |> should.equal(garanti.Fail("Expected 12 to NOT equal 12."))
-}
-
-pub fn it_should_not_be_equal_string_fail_test() {
-  expect.to_not_be_equal("Abba", "Abba")
-  |> should.equal(garanti.Fail("Expected \"Abba\" to NOT equal \"Abba\"."))
+    Test("it should fail when strings are equal", fn() {
+      expect.to_not_be_equal("Abba", "Abba")
+      |> expect.to_be_equal(garanti.Fail(
+        "Expected \"Abba\" to NOT equal \"Abba\".",
+      ))
+    }),
+  ])
 }
