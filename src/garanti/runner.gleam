@@ -35,6 +35,33 @@ pub fn run(level: garanti.LogLevel) -> Nil {
   let tests_to_run = list.filter(suites, fn(s) { !list.is_empty(s.tests) })
   let nr_tests_to_run = list.length(tests_to_run)
 
+  case nr_tests_to_run {
+    0 -> {
+      console.print(
+        output,
+        report.Message(report.Error, [
+          report.Enriched("No test suites to run!", [
+            report.Negative,
+            report.Bold,
+          ]),
+        ]),
+      )
+      Nil
+    }
+    _ -> {
+      run_tests(output, suites, nr_tests_to_run)
+      Nil
+    }
+  }
+}
+
+fn run_tests(
+  output: console.Output,
+  suites: List(garanti.Suite),
+  nr_tests_to_run: Int,
+) {
+  let print = fn(m: report.Message) { console.print(output, m) }
+
   // Create a subject to be notified when all suits have run.
   let done_sub = process.new_subject()
 
