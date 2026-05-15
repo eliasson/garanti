@@ -18,19 +18,32 @@ pub type ExecutionResult {
 // TODO We should add some sort of TestContext that can carry things like:
 // - Timeout limit
 
+// Declared here rather than a separate ffi module since it is only used below.
+// Maps to executor_ffi.erl which wraps the call in an Erlang try/catch.
+@external(erlang, "executor_ffi", "run_catching")
+fn run_catching(
+  f: fn() -> garanti.AssertionResult,
+) -> Result(garanti.AssertionResult, Nil)
+
 /// Execute the given test in isolation and return the result
 pub fn run(test_fn: fn() -> garanti.AssertionResult) -> ExecutionResult {
   log(Debug, "Preparing test for execution")
 
+  // Subject carries the full ExecutionResult so the panic case can be reported
+  // back without crashing the process.
   let test_subject = process.new_subject()
 
   // Create an unlinked process to allow for it to crash without us going down.
   let pid =
     process.spawn_unlinked(fn() {
-      // TODO Disable the erlang kernel loggning for this process so that crashes are not printed to std out.
       log(Debug, "Executing tests")
-      // Execute the test function and send the result to the subject
-      process.send(test_subject, test_fn())
+      // run_catching catches any Erlang exception (e.g. a Gleam panic) so the
+      // process exits normally, which suppresses the Erlang crash report.
+      let result = case run_catching(test_fn) {
+        Ok(r) -> Executed(r)
+        Error(Nil) -> ExecutionFailure("Test panicked")
+      }
+      process.send(test_subject, result)
     })
 
   // Monitor the test execution for when the process terminates.
@@ -39,11 +52,10 @@ pub fn run(test_fn: fn() -> garanti.AssertionResult) -> ExecutionResult {
   // Subscribe to messages from the proces
   let selector =
     process.new_selector()
-    |> process.select_map(test_subject, Executed)
+    |> process.select_map(test_subject, fn(r) { r })
     |> process.select_monitors(fn(down) {
       log(Debug, "Test could not be executed")
       case down {
-        // TODO Identify if the test timed out, crached or whatever.
         _ -> ExecutionFailure("Unknown test failure")
       }
     })

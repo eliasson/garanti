@@ -26,7 +26,12 @@ Initially I want to implement this project myself, then I should open up for con
 
 ## Artificial Intelligence
 
-I want this project to be mine with the purpose of something small and fun to work and polish. Therefore I do not want AI generated code in this project. Using an AI as a rubberduck, conversation, help is perfectly fine, but not for code generation. There is one particular part of Garanti that is generated with the help of Claude Code though, the test discovery mechanism.
+I want this project to be mine with the purpose of something small and fun to work and polish on. Therefore I prefer to avoid AI generated code in this project. Using an AI as a rubberduck, conversation, help is perfectly fine, but not for code generation.
+
+However, I am a pragmatic and there are some areas in which an agent are truly helpful for me, and that would be, Erlang. The following pieces of FFI are implemented with heavy use of agents.
+
+- The test discovery mechanism, traversing compilied modules to find `_test` functions.
+- The `run_catching` method allowing supressing panicking tests to case a crash report.
 
 ## Features
 

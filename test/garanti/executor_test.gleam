@@ -15,5 +15,5 @@ pub fn it_should_fail_failing_test_test() {
 
 pub fn it_should_fail_execution_for_paniciing_test_test() {
   executor.run(tests.panicking_assert)
-  |> should.equal(executor.ExecutionFailure("Unknown test failure"))
+  |> should.equal(executor.ExecutionFailure("Test panicked"))
 }
