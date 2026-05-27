@@ -212,6 +212,31 @@ pub fn to_be_ok_then(
   }
 }
 
+/// Asserts that the actual value is `Ok`.
+///
+/// This is a blunt test as the value of Ok is not asserted. Using `to_be_ok_then` will
+/// provide more robust test.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_ok(Ok(42))
+/// // -> Pass
+///
+/// expect.to_be_ok(Error(Nil))
+/// // -> Fail("Expected actual to be Ok but it was an Error of Nil.")
+/// ```
+pub fn to_be_ok(actual: Result(a, b)) -> garanti.AssertionResult {
+  case actual {
+    Ok(_) -> garanti.Pass
+    Error(err) ->
+      garanti.Fail(
+        "Expected actual to be Ok but it was an Error of "
+        <> string.inspect(err),
+      )
+  }
+}
+
 fn identify_element_presence(
   actual: List(a),
   remaining: List(a),
