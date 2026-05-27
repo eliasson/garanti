@@ -17,13 +17,13 @@ pub fn start(
   out: console.Output,
   number_suites: Int,
 ) -> Result(actor.Started(Subject(garanti.SuiteResult)), actor.StartError) {
-  actor.new(State(number_suites))
+  actor.new(State(number_suites, 0, 0))
   |> actor.on_message(fn(s, m) { handle_message(out, s, m, done_sub) })
   |> actor.start()
 }
 
 type State {
-  State(number_suites: Int)
+  State(number_suites: Int, total_tests: Int, total_failures: Int)
 }
 
 fn handle_message(
@@ -34,6 +34,15 @@ fn handle_message(
 ) {
   case msg {
     garanti.SuiteComplete(suite_name:, results:) -> {
+      let suite_tests = list.length(results)
+      let suite_failures =
+        list.count(results, fn(tr) {
+          case tr {
+            garanti.TestResult(_, garanti.Pass) -> False
+            _ -> True
+          }
+        })
+
       case describer.suite_results(suite_name, results) {
         [] -> {
           // This should not happen due to emtpy suite (since these are not run), when
@@ -54,7 +63,11 @@ fn handle_message(
         }
       }
 
-      State(state.number_suites - 1)
+      State(
+        state.number_suites - 1,
+        state.total_tests + suite_tests,
+        state.total_failures + suite_failures,
+      )
       |> are_we_done_yet(out, done_sub)
     }
 
@@ -68,7 +81,7 @@ fn handle_message(
         ]),
       )
 
-      State(state.number_suites - 1)
+      State(state.number_suites - 1, state.total_tests, state.total_failures)
       |> are_we_done_yet(out, done_sub)
     }
   }
@@ -81,12 +94,7 @@ fn are_we_done_yet(
 ) {
   case new_state.number_suites {
     0 -> {
-      print(
-        out,
-        report.Message(report.Success, [
-          report.Enriched("All suites run!", [report.Positive, report.Bold]),
-        ]),
-      )
+      print(out, describer.run_summary(new_state.total_tests, new_state.total_failures))
       //Send a message to the done subject to indicate that all suites are run.
       process.send(done_sub, Nil)
       actor.stop()

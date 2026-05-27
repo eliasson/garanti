@@ -78,6 +78,24 @@ fn successful_test(name: String) -> List(report.Message) {
   ]
 }
 
+pub fn run_summary(total_tests: Int, total_failures: Int) -> report.Message {
+  case total_failures {
+    0 ->
+      report.Message(report.Success, [
+        report.Enriched("All", [report.Secondary]),
+        report.Enriched(int.to_string(total_tests), [report.Name]),
+        report.Enriched("test(s) passed!", [report.Positive, report.Bold]),
+      ])
+    _ ->
+      report.Message(report.Error, [
+        report.Enriched(int.to_string(total_failures), [report.Name]),
+        report.Enriched("of", [report.Secondary]),
+        report.Enriched(int.to_string(total_tests), [report.Name]),
+        report.Enriched("test(s) failed.", [report.Negative, report.Bold]),
+      ])
+  }
+}
+
 fn timeout_test(name: String) -> List(report.Message) {
   [
     report.Message(report.Info, [

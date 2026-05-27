@@ -4,6 +4,32 @@ import garanti/internal/describer
 import garanti/internal/report.{Block, Enriched, Indent, Info, Message}
 import gleam/list
 
+pub fn run_summary_suite() {
+  Suite("When describing run summary", [
+    Test("it should report all passed when there are no failures", fn() {
+      describer.run_summary(10, 0)
+      |> expect.to_be_equal(
+        Message(report.Success, [
+          Enriched("All", [report.Secondary]),
+          Enriched("10", [report.Name]),
+          Enriched("test(s) passed!", [report.Positive, report.Bold]),
+        ]),
+      )
+    }),
+    Test("it should report the number of failures when some tests failed", fn() {
+      describer.run_summary(10, 3)
+      |> expect.to_be_equal(
+        Message(report.Error, [
+          Enriched("3", [report.Name]),
+          Enriched("of", [report.Secondary]),
+          Enriched("10", [report.Name]),
+          Enriched("test(s) failed.", [report.Negative, report.Bold]),
+        ]),
+      )
+    }),
+  ])
+}
+
 pub fn describer_suite() {
   let result =
     describer.suite_results("TestSuite", [
