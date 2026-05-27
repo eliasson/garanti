@@ -38,19 +38,20 @@ pub fn suite_results(
 }
 
 fn suite_completion(total_count: Int, failure_count: Int) {
-  let pass_count = total_count - failure_count
-
-  // TODO Word things differently based on any failures:
-  //   completed successfully with 3 tests
-  //   completed with 3 failures
-  [
-    report.Enriched("completed with", [report.Secondary]),
-    report.Enriched(
-      int.to_string(pass_count) <> " of " <> int.to_string(total_count),
-      [report.Name],
-    ),
-    report.Enriched("test(s) passed", [report.Secondary]),
-  ]
+  case failure_count {
+    0 -> [
+      report.Enriched("completed", [report.Secondary]),
+      report.Enriched("successfully", [report.Positive, report.Bold]),
+      report.Enriched("with", [report.Secondary]),
+      report.Enriched(int.to_string(total_count), [report.Name]),
+      report.Enriched("test(s)", [report.Secondary]),
+    ]
+    _ -> [
+      report.Enriched("completed with", [report.Secondary]),
+      report.Enriched(int.to_string(failure_count), [report.Name]),
+      report.Enriched("failure(s)", [report.Negative, report.Bold]),
+    ]
+  }
 }
 
 fn failed_test(name: String, reason: String) -> List(report.Message) {

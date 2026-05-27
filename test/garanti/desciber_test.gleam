@@ -22,8 +22,31 @@ pub fn describer_suite() {
           Enriched("Suite", [report.Secondary]),
           Enriched("TestSuite", [report.Name]),
           Enriched("completed with", [report.Secondary]),
-          Enriched("1 of 3", [report.Name]),
-          Enriched("test(s) passed", [report.Secondary]),
+          Enriched("2", [report.Name]),
+          Enriched("failure(s)", [report.Negative, report.Bold]),
+        ]),
+      )
+    }),
+
+    Test("it should include successul suite result", fn() {
+      let successful_result =
+        describer.suite_results("TestSuite", [
+          garanti.TestResult("test 1", garanti.Pass),
+          garanti.TestResult("test 2", garanti.Pass),
+        ])
+
+      use head <- expect.to_be_ok_then(list.first(successful_result))
+
+      head
+      |> expect.to_be_equal(
+        Message(Info, [
+          Enriched("Suite", [report.Secondary]),
+          Enriched("TestSuite", [report.Name]),
+          Enriched("completed", [report.Secondary]),
+          Enriched("successfully", [report.Positive, report.Bold]),
+          Enriched("with", [report.Secondary]),
+          Enriched("2", [report.Name]),
+          Enriched("test(s)", [report.Secondary]),
         ]),
       )
     }),
