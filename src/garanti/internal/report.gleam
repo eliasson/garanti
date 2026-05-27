@@ -31,6 +31,8 @@ pub type Token {
   Enriched(text: String, effects: List(Effect))
   /// Indent the output (if applicable).
   Indent
+  /// Separate the output from the adjacent text (if applicable).
+  Block(text: String)
 }
 
 /// A message that is part of a test report.

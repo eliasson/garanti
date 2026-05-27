@@ -1,9 +1,11 @@
 import garanti.{type Suite, Suite, Test}
+import garanti/expect
 
 pub fn another_suite() -> Suite {
   Suite("Suite 3", [
     Test("should pass", fn() { garanti.Pass }),
     Test("should also pass", fn() { garanti.Fail("I was set up to fail!") }),
+    Test("equal", fn() { expect.to_be_equal(1, 2) }),
   ])
 }
 

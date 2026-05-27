@@ -1,7 +1,7 @@
 import garanti.{Suite, Test}
 import garanti/expect
 import garanti/internal/describer
-import garanti/internal/report.{Enriched, Indent, Info, Message, Plain}
+import garanti/internal/report.{Block, Enriched, Indent, Info, Message}
 import gleam/list
 
 pub fn describer_suite() {
@@ -61,7 +61,7 @@ pub fn describer_suite() {
           Enriched("Test", [report.Secondary]),
           Enriched("test 1", [report.Name]),
           Enriched("failed with:", [report.Negative, report.Bold]),
-          Plain("Oh no!"),
+          Block("Oh no!"),
         ]),
         Message(report.Info, [
           Indent,
@@ -75,7 +75,7 @@ pub fn describer_suite() {
           Enriched("Test", [report.Secondary]),
           Enriched("test 3", [report.Name]),
           Enriched("failed with:", [report.Negative, report.Bold]),
-          Plain("No, not me too..."),
+          Block("No, not me too..."),
         ]),
       ])
     }),

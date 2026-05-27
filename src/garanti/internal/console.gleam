@@ -59,6 +59,7 @@ fn evaluate_token(token: report.Token) -> String {
     report.Plain(text) -> text
     report.Enriched(text, effects) -> t(text, effects)
     report.Indent -> "  "
+    report.Block(text) -> "\n\n" <> text <> "\n"
   }
 }
 

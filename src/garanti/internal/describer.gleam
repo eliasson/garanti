@@ -61,7 +61,7 @@ fn failed_test(name: String, reason: String) -> List(report.Message) {
       report.Enriched("Test", [report.Secondary]),
       report.Enriched(name, [report.Name]),
       report.Enriched("failed with:", [report.Negative, report.Bold]),
-      report.Plain(reason),
+      report.Block(reason),
     ]),
   ]
 }
