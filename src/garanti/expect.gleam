@@ -237,6 +237,65 @@ pub fn to_be_ok(actual: Result(a, b)) -> garanti.AssertionResult {
   }
 }
 
+/// Asserts that the actual value is an `Error`, then runs further assertions on the
+/// inner value via a callback.
+///
+/// Use this when you want to both verify a `Result` is `Error` and make
+/// additional assertions on the unwrapped value in a single expression.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_error_then(Error(404), fn(n) { expect.to_be_equal(n, 404) })
+/// // -> Pass
+///
+/// // Or alternative
+/// use value <- expect.to_be_error_then(Error(404))
+/// expect.to_be_equal(value, 404)
+/// // -> Pass
+///
+/// expect.to_be_ok_error(Error(418), fn(n) { expect.to_be_equal(n, 404) })
+/// // -> Fail("Expected 418 to equal 404.")
+/// ```
+pub fn to_be_error_then(
+  actual: Result(a, b),
+  t: fn(b) -> garanti.AssertionResult,
+) -> garanti.AssertionResult {
+  case actual {
+    Ok(value) ->
+      garanti.Fail(
+        "Expected actual to be Error but it was an Ok of "
+        <> string.inspect(value),
+      )
+    Error(err) -> t(err)
+  }
+}
+
+/// Asserts that the actual value is an`Error`.
+///
+/// This is a blunt test as the value of Error is not asserted. Using `to_be_error_then` will
+/// provide more robust test.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_error(Error(Nil))
+/// // -> Pass
+///
+/// expect.to_be_error(Ok(42))
+/// // -> Fail("Expected actual to be Error but it was an Ok of 42.")
+/// ```
+pub fn to_be_error(actual: Result(a, b)) -> garanti.AssertionResult {
+  case actual {
+    Ok(value) ->
+      garanti.Fail(
+        "Expected actual to be Error but it was an Ok of "
+        <> string.inspect(value),
+      )
+    Error(_) -> garanti.Pass
+  }
+}
+
 fn identify_element_presence(
   actual: List(a),
   remaining: List(a),

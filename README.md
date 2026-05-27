@@ -58,7 +58,7 @@ Test discovery performs some validation on the suites and show warnings for:
 - [ ] List contains.
 - [ ] String starts with (?)
 - [ ] String ends with (?)
-- [ ] Is Error.
+- [X] Is Error.
 - [X] Is Ok.
 - [X] Is Some.
 - [X] Is None.
