@@ -331,6 +331,51 @@ pub fn to_be_empty(actual: List(a)) -> garanti.AssertionResult {
   }
 }
 
+/// Assert that a list contains a given element.
+///
+/// On failure, the first element is described in the error message, as well as the
+/// number of remaining elements in the list.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_contain([1, 2, 3], 2)
+/// // -> Pass
+///
+/// expect.to_contain([1, 2, 3], 4)
+/// // -> Fail("Expected list to contain 4 but contained [1] and 2 more element(s)")
+/// ```
+pub fn to_contain(actual: List(a), expected: a) -> garanti.AssertionResult {
+  case list.contains(actual, expected) {
+    True -> garanti.Pass
+    False -> {
+      case actual {
+        [] -> {
+          garanti.Fail(
+            "Expected empty list to contain " <> string.inspect(expected),
+          )
+        }
+        [head, ..tail] -> {
+          let count = case list.length(tail) {
+            0 -> "no"
+            n -> int.to_string(n)
+          }
+
+          garanti.Fail(
+            "Expected list to contain "
+            <> string.inspect(expected)
+            <> " but contained ["
+            <> string.inspect(head)
+            <> "] and "
+            <> count
+            <> " more element(s)",
+          )
+        }
+      }
+    }
+  }
+}
+
 fn identify_element_presence(
   actual: List(a),
   remaining: List(a),
