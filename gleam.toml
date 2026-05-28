@@ -1,15 +1,15 @@
 name = "garanti"
-version = "0.0.1"
+version = "0.1.0"
+description = "Garanti is a Gleam test framework built around suites, parallel execution, and readable failure messages."
 licences = ["Apache-2.0"]
-# Fill out these fields if you intend to generate HTML documentation or publish
-# your project to the Hex package manager.
-#
-# description = ""
-# repository = { type = "github", user = "", repo = "" }
-# links = [{ title = "Website", href = "" }]
-#
-# For a full reference of all the available options, you can have a look at
-# https://gleam.run/writing-gleam/gleam-toml/.
+
+# OTP is used by the runner. Maybe, someday, I will abstract that away and implement a JavaScript runner.
+target = "erlang"
+
+[repository]
+type = "github"
+user = "eliasson"
+repo = "garanti"
 
 [dependencies]
 gleam_stdlib = ">= 0.44.0 and < 2.0.0"
