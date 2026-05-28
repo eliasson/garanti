@@ -41,7 +41,3 @@ Test discovery performs some validation on the suites and show warnings for:
 
 - Suite names that are not unique
 - Suites that have zero tests.
-
-## Matchers needed
-
-- [ ] String matches regex.
