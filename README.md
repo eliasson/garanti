@@ -40,11 +40,15 @@ Also, tests should be managed in suites. This will give a group of tests a conte
 
 ## Installation
 
+  > [!NOTE]
+  > I currently dog-fooding this library in one of my applications and will likely do some adjustments and extensions.
+  > Hence, I am making the repository public but not publishing on hex.pm until it reaches v1.0.0.
+
 Add `garanti` to your `gleam.toml`:
 
 ```toml
 [dev-dependencies]
-garanti = ">= 0.0.1 and < 1.0.0"
+garanti = { git = "https://github.com/eliasson/garanti", ref = "main" }
 ```
 
 Then set your test entrypoint to call the runner:
