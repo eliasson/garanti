@@ -4,6 +4,7 @@
 /// `garanti.AssertionResult` with the result.
 import garanti
 import garanti/internal/list_ext
+import gleam/int
 import gleam/list
 import gleam/option
 import gleam/string
@@ -293,6 +294,40 @@ pub fn to_be_error(actual: Result(a, b)) -> garanti.AssertionResult {
         <> string.inspect(value),
       )
     Error(_) -> garanti.Pass
+  }
+}
+
+/// Asserts that a list has no elemenets.
+///
+/// On failure, the first element is described in the error message, as well as the
+/// number of remaining elements in the list.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_empty([])
+/// // -> Pass
+///
+/// expect.to_be_error([1, 2, 3])
+/// // -> Fail("Expected list to be empty but contained [1] and 2 more elements")
+/// ```
+pub fn to_be_empty(actual: List(a)) -> garanti.AssertionResult {
+  case actual {
+    [] -> garanti.Pass
+    [head, ..tail] -> {
+      let count = case list.length(tail) {
+        0 -> "no"
+        n -> int.to_string(n)
+      }
+
+      garanti.Fail(
+        "Expected list to be empty but contained ["
+        <> string.inspect(head)
+        <> "] and "
+        <> count
+        <> " more elements",
+      )
+    }
   }
 }
 
