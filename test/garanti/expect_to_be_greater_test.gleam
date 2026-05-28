@@ -27,7 +27,7 @@ pub fn to_be_greater_suite() {
   ])
 }
 
-pub fn to_be_greater_than_suite() {
+pub fn to_be_greater_or_equal_suite() {
   Suite("When matching to_be_greater_or_equal", [
     Test("it should pass when integer value is greater than the expected", fn() {
       expect.to_be_greater_or_equal(11, 10, int.compare)

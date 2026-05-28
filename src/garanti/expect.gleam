@@ -413,6 +413,62 @@ pub fn to_be_greater_or_equal(
   }
 }
 
+/// Assert that the actual value is less than the expected value.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_less(2, 3)
+/// // -> Pass
+///
+/// expect.to_be_less(3, 2)
+/// // -> Fail("Expected 3 to be less than 2")
+/// ```
+pub fn to_be_less(
+  actual: a,
+  expected: a,
+  compare: fn(a, a) -> order.Order,
+) -> garanti.AssertionResult {
+  case compare(actual, expected) {
+    order.Lt -> garanti.Pass
+    _ ->
+      garanti.Fail(
+        "Expected "
+        <> string.inspect(actual)
+        <> " to be less than "
+        <> string.inspect(expected),
+      )
+  }
+}
+
+/// Assert that the actual value is less than or equal to the expected value.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_less_or_equal(2, 2)
+/// // -> Pass
+///
+/// expect.to_be_less_or_equal(2, 3)
+/// // -> Fail("Expected 2 to be less than or equal to 3")
+/// ```
+pub fn to_be_less_or_equal(
+  actual: a,
+  expected: a,
+  compare: fn(a, a) -> order.Order,
+) -> garanti.AssertionResult {
+  case compare(actual, expected) {
+    order.Gt ->
+      garanti.Fail(
+        "Expected "
+        <> string.inspect(actual)
+        <> " to be less than or equal to "
+        <> string.inspect(expected),
+      )
+    _ -> garanti.Pass
+  }
+}
+
 fn identify_element_presence(
   actual: List(a),
   remaining: List(a),
