@@ -4,10 +4,12 @@
 /// `garanti.AssertionResult` with the result.
 import garanti
 import garanti/internal/list_ext
-import gleam/int
 import gleam/list
 import gleam/option
 import gleam/string
+
+/// The max number of elements to describe when a list comparision failed.
+const describe_list_limit = 10
 
 /// Asserts that two values of the same type are equal.
 ///
@@ -102,13 +104,13 @@ pub fn to_be_equivalent(
 
       // Build the failure message. Start with the missing.
       let msg = case missing, extra {
-        m, [] -> "is missing element(s) " <> describe_list(m)
-        [], e -> "has extra element(s) " <> describe_list(e)
+        m, [] -> "is missing element(s) " <> describe_presence_list(m)
+        [], e -> "has extra element(s) " <> describe_presence_list(e)
         m, e ->
           "is missing element(s) "
-          <> describe_list(m)
+          <> describe_presence_list(m)
           <> " and has extra element(s) "
-          <> describe_list(e)
+          <> describe_presence_list(e)
       }
 
       garanti.Fail("Actual value " <> msg)
@@ -299,9 +301,6 @@ pub fn to_be_error(actual: Result(a, b)) -> garanti.AssertionResult {
 
 /// Asserts that a list has no elemenets.
 ///
-/// On failure, the first element is described in the error message, as well as the
-/// number of remaining elements in the list.
-///
 /// ## Examples
 ///
 /// ```gleam
@@ -309,31 +308,21 @@ pub fn to_be_error(actual: Result(a, b)) -> garanti.AssertionResult {
 /// // -> Pass
 ///
 /// expect.to_be_error([1, 2, 3])
-/// // -> Fail("Expected list to be empty but contained [1] and 2 more elements")
+/// // -> Fail("Expected list to be empty but was [1, 2, 3]")
 /// ```
 pub fn to_be_empty(actual: List(a)) -> garanti.AssertionResult {
   case actual {
     [] -> garanti.Pass
-    [head, ..tail] -> {
-      let count = case list.length(tail) {
-        0 -> "no more elements"
-        n -> int.to_string(n) <> " more element(s)"
-      }
-
+    _ -> {
       garanti.Fail(
-        "Expected list to be empty but contained ["
-        <> string.inspect(head)
-        <> "] and "
-        <> count,
+        "Expected list to be empty but was "
+        <> list_ext.describe(actual, describe_list_limit),
       )
     }
   }
 }
 
 /// Assert that a list contains a given element.
-///
-/// On failure, the first element is described in the error message, as well as the
-/// number of remaining elements in the list.
 ///
 /// ## Examples
 ///
@@ -342,7 +331,7 @@ pub fn to_be_empty(actual: List(a)) -> garanti.AssertionResult {
 /// // -> Pass
 ///
 /// expect.to_contain([1, 2, 3], 4)
-/// // -> Fail("Expected list to contain 4 but contained [1] and 2 more element(s)")
+/// // -> Fail("Expected list to contain 4 but contained [1, 2, 3]")
 /// ```
 pub fn to_contain(actual: List(a), expected: a) -> garanti.AssertionResult {
   case list.contains(actual, expected) {
@@ -354,20 +343,12 @@ pub fn to_contain(actual: List(a), expected: a) -> garanti.AssertionResult {
             "Expected empty list to contain " <> string.inspect(expected),
           )
         }
-        [head, ..tail] -> {
-          let count = case list.length(tail) {
-            0 -> "no"
-            n -> int.to_string(n)
-          }
-
+        _ -> {
           garanti.Fail(
             "Expected list to contain "
             <> string.inspect(expected)
-            <> " but contained ["
-            <> string.inspect(head)
-            <> "] and "
-            <> count
-            <> " more element(s)",
+            <> " but contained "
+            <> list_ext.describe(actual, describe_list_limit),
           )
         }
       }
@@ -417,15 +398,8 @@ type CollectionPresence(a) {
   Extra(value: a)
 }
 
-fn describe_list(lst: List(CollectionPresence(a))) -> String {
-  let elements =
-    lst
-    |> list.map(describe)
-    |> string.join(", ")
-
-  "[" <> elements <> "]"
-}
-
-fn describe(value: CollectionPresence(a)) {
-  string.inspect(value.value)
+fn describe_presence_list(lst: List(CollectionPresence(a))) -> String {
+  lst
+  |> list.map(fn(value: CollectionPresence(a)) { value.value })
+  |> list_ext.describe(describe_list_limit)
 }

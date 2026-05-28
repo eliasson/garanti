@@ -20,14 +20,14 @@ pub fn to_be_contain_suite() {
     Test("it should fail for list with missing element", fn() {
       expect.to_contain([1, 3, 5, 7], 2)
       |> expect.to_be_equal(garanti.Fail(
-        "Expected list to contain 2 but contained [1] and 3 more element(s)",
+        "Expected list to contain 2 but contained [1, 3, 5, 7]",
       ))
     }),
 
     Test("it should fail for list with missing object", fn() {
       expect.to_contain([Foo(1, 2), Foo(3, 4)], Foo(2, 4))
       |> expect.to_be_equal(garanti.Fail(
-        "Expected list to contain Foo(2, 4) but contained [Foo(1, 2)] and 1 more element(s)",
+        "Expected list to contain Foo(2, 4) but contained [Foo(1, 2), Foo(3, 4)]",
       ))
     }),
   ])
