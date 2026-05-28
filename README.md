@@ -44,8 +44,6 @@ Test discovery performs some validation on the suites and show warnings for:
 
 ## Matchers needed
 
-- [ ] Value greater than (if relevant, else failure).
-- [ ] Value greater or equal than (if relevant, else failure).
 - [ ] Value less than (if relevant, else failure).
 - [ ] Value less or equal than (if relevant, else failure).
 - [ ] String matches regex.

@@ -6,6 +6,7 @@ import garanti
 import garanti/internal/list_ext
 import gleam/list
 import gleam/option
+import gleam/order
 import gleam/string
 
 /// The max number of elements to describe when a list comparision failed.
@@ -353,6 +354,62 @@ pub fn to_contain(actual: List(a), expected: a) -> garanti.AssertionResult {
         }
       }
     }
+  }
+}
+
+/// Assert that the actual value is greater than the expected value.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_greater(3, 2)
+/// // -> Pass
+///
+/// expect.to_be_greater(2, 3)
+/// // -> Fail("Expected 2 to be greater than 3")
+/// ```
+pub fn to_be_greater(
+  actual: a,
+  expected: a,
+  compare: fn(a, a) -> order.Order,
+) -> garanti.AssertionResult {
+  case compare(actual, expected) {
+    order.Gt -> garanti.Pass
+    _ ->
+      garanti.Fail(
+        "Expected "
+        <> string.inspect(actual)
+        <> " to be greater than "
+        <> string.inspect(expected),
+      )
+  }
+}
+
+/// Assert that the actual value is greater than or equal to the expected value.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.to_be_greater_or_equal(2, 2)
+/// // -> Pass
+///
+/// expect.to_be_greater_or_equal(2, 3)
+/// // -> Fail("Expected 2 to be greater or equal to 3")
+/// ```
+pub fn to_be_greater_or_equal(
+  actual: a,
+  expected: a,
+  compare: fn(a, a) -> order.Order,
+) -> garanti.AssertionResult {
+  case compare(actual, expected) {
+    order.Lt ->
+      garanti.Fail(
+        "Expected "
+        <> string.inspect(actual)
+        <> " to be greater or equal to "
+        <> string.inspect(expected),
+      )
+    _ -> garanti.Pass
   }
 }
 
