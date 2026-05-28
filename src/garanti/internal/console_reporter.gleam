@@ -94,7 +94,10 @@ fn are_we_done_yet(
 ) {
   case new_state.number_suites {
     0 -> {
-      print(out, describer.run_summary(new_state.total_tests, new_state.total_failures))
+      print(
+        out,
+        describer.run_summary(new_state.total_tests, new_state.total_failures),
+      )
       //Send a message to the done subject to indicate that all suites are run.
       process.send(done_sub, Nil)
       actor.stop()
