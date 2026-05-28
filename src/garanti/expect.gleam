@@ -316,16 +316,15 @@ pub fn to_be_empty(actual: List(a)) -> garanti.AssertionResult {
     [] -> garanti.Pass
     [head, ..tail] -> {
       let count = case list.length(tail) {
-        0 -> "no"
-        n -> int.to_string(n)
+        0 -> "no more elements"
+        n -> int.to_string(n) <> " more element(s)"
       }
 
       garanti.Fail(
         "Expected list to be empty but contained ["
         <> string.inspect(head)
         <> "] and "
-        <> count
-        <> " more elements",
+        <> count,
       )
     }
   }
