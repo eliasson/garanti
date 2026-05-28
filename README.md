@@ -1,39 +1,173 @@
 # Garanti
 
-Garanti is a test runner and matcher library for Gleam.
+Garanti is a Gleam test framework built around suites, parallel execution and readable failure messages.
 
-## Purpose and design goals
+```gleam
+import garanti.{Suite, Test}
+import garanti/expect
 
-Writing tests in Gleam today using `gleeunit` is a pretty barebone solution, which is fine, since it is the default. But I want something more similiar to what I am used to in other languages.
+pub fn math_suite() -> Suite {
+  Suite("math", [
+    Test("should add two numbers", fn() {
+      math.add(2, 2)
+      |> expect.to_be_equal(4)
+    }),
+
+    Test("should divide by two", fn() {
+      use result <- expect.to_be_ok_then(math.divide(4, 2))
+      expect.to_be_equal(result, 2)
+    }),
+
+    Test("should not divide by zero", fn() {
+      use result <- expect.to_be_error_then(math.divide(4, 0))
+      expect.to_be_equal(result, "Division by zero")
+    })
+  ])
+}
+```
+
+## Why
+
+Writing tests in Gleam today using `gleeunit` is a pretty barebone solution, which is fine, since it is the default. But I want something more similar to what I am used to in other languages.
 
 Core concepts:
 
-- Each tests should return the result of it, which can be success, failure, error or skip.
+- Each test should return the result of it, which can be success, failure or error.
 - Each test runs in isolation from all the other tests.
 - All tests run in parallel.
 
 Also, tests should be managed in suites. This will give a group of tests a context and allows for local helper functions for these tests. It should be possible to run a single suite as well as disabling a single suite easily.
 
-## Under development
+## Installation
 
-This library is under development and is not in a usable state yet. I have a few other private Gleam projects where I will dog-food this library before making anything public.
+Add `garanti` to your `gleam.toml`:
 
-So this README is currently more of my notebook than a proper README =)
+```toml
+[dev-dependencies]
+garanti = ">= 0.0.1 and < 1.0.0"
+```
 
-## Contributors
+Then set your test entrypoint to call the runner:
 
-Initially I want to implement this project myself, then I should open up for contributors.
+```gleam
+// test/my_project_test.gleam
+import garanti
+import garanti/runner
+
+pub fn main() -> Nil {
+  runner.run(garanti.Info)
+}
+```
+
+## Writing tests
+
+All tests belong to a suite. A suite is any function ending in `_suite` and that returns a `Suite`.
+
+Each test is a function that returns `AssertionResult`:
+
+```gleam
+pub type AssertionResult {
+  Pass
+  Fail(String)
+  Timeout
+}
+```
+
+You can return `garanti.Pass` or `garanti.Fail("message")` directly, or use the `expect` module.
+
+## Runner output
+
+The log level controls how much the runner prints:
+
+```gleam
+runner.run(garanti.Debug)    // everything
+runner.run(garanti.Info)     // suite results and warnings
+runner.run(garanti.Warning)  // warnings and errors
+runner.run(garanti.Error)    // errors only
+```
+
+Here is a snippet of the tests covering Garanti itself as an example of the test report output.
+
+```
+❯ gleam test
+  Compiling garanti
+   Compiled in 0.29s
+    Running garanti_test.main
+  Discovered 23 suite(s).
+  Analysed suites: No problems found.
+  Running 23 suites...
+  Suite When matching to_not_be_equal completed successfully with 4 test(s)
+     Test it should pass when integers are NOT equal completed successfully
+     Test it should pass when strings are NOT equal completed successfully
+     Test it should fail when integers are equal completed successfully
+     Test it should fail when strings are equal completed successfully
+  ...
+  Suite When suite is successful completed successfully with 3 test(s)
+    Test it should have 3 passed tests completed successfully
+    Test it should have 0 failing tests completed successfully
+    Test it should have 3 completed tests completed successfully
+  All 81 test(s) passed!
+```
+
+## Matchers
+
+Import `garanti/expect` and use the matchers directly. Each returns an `AssertionResult`.
+
+| Matcher                             | What it checks |
+|-------------------------------------|----------------|
+| `to_be_equal(a, b)`                 | `a == b` |
+| `to_not_be_equal(a, b)`             | `a != b` |
+| `to_be_some(opt, val)`              | option is `Some(val)` |
+| `to_be_none(opt)`                   | option is `None` |
+| `to_be_ok(result)`                  | result is `Ok(_)` |
+| `to_be_ok_then(result, fn)`         | result is `Ok`, continue asserting on value |
+| `to_be_error(result)`               | result is `Error(_)` |
+| `to_be_error_then(result, fn)`      | result is `Error`, continue asserting on value |
+| `to_be_empty(list)`                 | list has zero elements |
+| `to_contain(list, el)`              | list contains element |
+| `to_be_equivalent(a, b)`            | same elements regardless of order |
+| `to_be_greater(a, b, cmp)`          | `a > b` |
+| `to_be_greater_or_equal(a, b, cmp)` | `a >= b` |
+| `to_be_less(a, b, cmp)`             | `a < b` |
+| `to_be_less_or_equal(a, b, cmp)`    | `a <= b` |
+
+I want to keep the matchers few. When I write tests I prefer to transform complex data to something simpler. E.g. extract the significant parts of a struct into a smaller tuple and assert on that.
+
+
+## Before each
+
+There is no before each. You can do complex setup before creating the Suite and the tests will have access to that. Also, since Gleam is immutable there is no risk of tests interfering with each other using that state. Test-specific modifications are done in each test if needed, keeping the state local and nice.
+
+```gleam
+import garanti.{Suite, Test}
+import garanti/expect
+
+pub fn math_suite() -> Suite {
+  // This is the place to make "complex" setup.
+  let addend = 2
+
+  Suite("math", [
+    Test("should add two numbers", fn() {
+      // And then use it in your test as you want.
+      let other_addend = addend + 2
+
+      math.add(addend, other_addend)
+      |> expect.to_be_equal(6)
+    }),
+  ])
+}
+```
 
 ## Artificial Intelligence
 
 I want this project to be mine with the purpose of something small and fun to work and polish on. Therefore I prefer to avoid AI generated code in this project. Using an AI as a rubberduck, conversation, help is perfectly fine, but not for code generation.
 
-However, I am a pragmatic and there are some areas in which an agent are truly helpful for me, and that would be, Erlang. The following pieces of FFI are implemented with heavy use of agents.
+However, I am a pragmatic person and there are some areas in which an agent are truly helpful for me, one of these areas is Erlang. The following pieces of FFI are implemented with heavy use of agents.
 
-- The test discovery mechanism, traversing compilied modules to find `_test` functions.
-- The `run_catching` method allowing supressing panicking tests to case a crash report.
+- The test discovery mechanism, traversing compiled modules to find `_suite` functions.
+- The `run_catching` method allowing suppressing panicking tests from causing a crash report.
 
-## Features
+## Contributors
 
 Features and limitiations that needs to be described and illustrated in a documentation.
 
