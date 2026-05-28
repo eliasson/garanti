@@ -169,9 +169,4 @@ However, I am a pragmatic person and there are some areas in which an agent are 
 
 ## Contributors
 
-Features and limitiations that needs to be described and illustrated in a documentation.
-
-Test discovery performs some validation on the suites and show warnings for:
-
-- Suite names that are not unique
-- Suites that have zero tests.
+Initially I want to implement this project myself, then I might open up for contributors. If you are interested drop me an email (markus.eliasson@proton.me) and we will take it from there. Please do not just open a pull requests with out us discussing first.
