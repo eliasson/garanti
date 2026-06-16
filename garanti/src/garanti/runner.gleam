@@ -1,9 +1,9 @@
 import garanti
 import garanti/internal/console_reporter
 import garanti/internal/discovery
-import garanti/internal/report
 import garanti/internal/suite
 import garanti/shared/console
+import garanti/shared/report
 import gleam/erlang/process
 import gleam/int
 import gleam/io

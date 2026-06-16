@@ -4,8 +4,8 @@
 
 import garanti
 import garanti/internal/describer
-import garanti/internal/report
 import garanti/shared/console.{print}
+import garanti/shared/report
 import gleam/erlang/process.{type Subject}
 import gleam/list
 import gleam/otp/actor
