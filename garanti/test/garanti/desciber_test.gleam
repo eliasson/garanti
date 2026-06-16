@@ -1,6 +1,6 @@
 import garanti.{Suite, Test}
 import garanti/expect
-import garanti/internal/describer
+import garanti/shared/describer
 import garanti/shared/report.{Block, Enriched, Indent, Info, Message}
 import gleam/list
 
