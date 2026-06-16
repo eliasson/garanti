@@ -1,4 +1,5 @@
 import garanti.{type Suite}
+import garanti/shared/report
 
 import gleam/list
 import gleam/set
@@ -29,6 +30,25 @@ pub fn describe_analysis_result(result: AnalysisResult) -> String {
     DuplicateSuiteName(suite_name:) ->
       "Multiple suite are named \"" <> suite_name <> "\"."
     EmptySuite(suite_name:) -> "Suite \"" <> suite_name <> " has no tests."
+  }
+}
+
+pub fn perform_analysis(suites: List(garanti.Suite)) -> List(report.Message) {
+  case analyse_suites(suites) {
+    [] -> [
+      report.Message(report.Info, [
+        report.Plain("Analysed suites: No problems found."),
+      ]),
+    ]
+    results ->
+      results
+      |> list.map(describe_analysis_result)
+      |> list.sort(string.compare)
+      |> list.map(fn(msg) {
+        report.Message(report.Warning, [
+          report.Enriched(msg, [report.Important]),
+        ])
+      })
   }
 }
 

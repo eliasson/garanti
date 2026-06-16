@@ -29,7 +29,7 @@ pub fn run(level: garanti.LogLevel) -> Nil {
     ]),
   )
 
-  let messages = perform_analysis(suites)
+  let messages = analysis.perform_analysis(suites)
   console.print_all(output, messages)
 
   // Skip running empty suites
@@ -98,24 +98,5 @@ fn run_tests(
       io.println("Test runner timed out!")
       Nil
     }
-  }
-}
-
-fn perform_analysis(suites: List(garanti.Suite)) -> List(report.Message) {
-  case analysis.analyse_suites(suites) {
-    [] -> [
-      report.Message(report.Info, [
-        report.Plain("Analysed suites: No problems found."),
-      ]),
-    ]
-    results ->
-      results
-      |> list.map(analysis.describe_analysis_result)
-      |> list.sort(string.compare)
-      |> list.map(fn(msg) {
-        report.Message(report.Warning, [
-          report.Enriched(msg, [report.Important]),
-        ])
-      })
   }
 }
