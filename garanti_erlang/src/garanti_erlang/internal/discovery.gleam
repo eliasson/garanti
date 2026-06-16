@@ -1,5 +1,5 @@
 import garanti.{type Suite}
-import garanti/internal/discovery_ffi
+import garanti_erlang/internal/discovery_ffi
 import gleam/list
 import gleam/set
 import gleam/string

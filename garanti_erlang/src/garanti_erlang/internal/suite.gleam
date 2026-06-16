@@ -1,5 +1,5 @@
 import garanti
-import garanti/internal/executor
+import garanti_erlang/internal/executor
 import gleam/erlang/process.{type Subject}
 import gleam/int
 import gleam/list

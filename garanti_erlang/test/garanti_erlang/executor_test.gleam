@@ -1,7 +1,7 @@
 import garanti.{Suite, Test}
 import garanti/expect
-import garanti/internal/executor
-import garanti/support/tests
+import garanti_erlang/internal/executor
+import garanti_erlang/support/tests
 
 pub fn executor_suite() {
   Suite("When executing tests", [

@@ -1,7 +1,7 @@
 import garanti.{Suite, Test}
 import garanti/expect
-import garanti/internal/discovery
-import garanti/support/tests
+import garanti_erlang/internal/discovery
+import garanti_erlang/support/tests
 import gleam/list
 import gleam/string
 
