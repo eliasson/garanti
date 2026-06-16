@@ -1,6 +1,6 @@
 import garanti.{Suite, Test}
 import garanti/expect
-import garanti_erlang/internal/discovery
+import garanti/shared/analysis
 import garanti_erlang/support/tests
 import gleam/list
 import gleam/string
@@ -12,7 +12,7 @@ pub fn when_analysing_suites_suite() {
         Suite("Alpha", [Test("One", tests.passing_assert)]),
         Suite("Bravo", [Test("One", tests.passing_assert)]),
       ]
-      |> discovery.analyse_suites()
+      |> analysis.analyse_suites()
       |> expect.to_be_equal([])
     }),
 
@@ -21,8 +21,8 @@ pub fn when_analysing_suites_suite() {
         Suite("Alpha", [Test("One", tests.passing_assert)]),
         Suite("Alpha", [Test("One", tests.passing_assert)]),
       ]
-      |> discovery.analyse_suites()
-      |> expect.to_be_equal([discovery.DuplicateSuiteName("Alpha")])
+      |> analysis.analyse_suites()
+      |> expect.to_be_equal([analysis.DuplicateSuiteName("Alpha")])
     }),
 
     Test("it should ignore casing when identifying duplicate suite", fn() {
@@ -30,8 +30,8 @@ pub fn when_analysing_suites_suite() {
         Suite("ALPHA", [Test("One", tests.passing_assert)]),
         Suite("alpha", [Test("One", tests.passing_assert)]),
       ]
-      |> discovery.analyse_suites()
-      |> expect.to_be_equal([discovery.DuplicateSuiteName("alpha")])
+      |> analysis.analyse_suites()
+      |> expect.to_be_equal([analysis.DuplicateSuiteName("alpha")])
     }),
 
     Test("it should identify multiple duplicates suite names", fn() {
@@ -42,11 +42,11 @@ pub fn when_analysing_suites_suite() {
         Suite("Bravo", [Test("One", tests.passing_assert)]),
         Suite("Alpha", [Test("One", tests.passing_assert)]),
       ]
-      |> discovery.analyse_suites()
+      |> analysis.analyse_suites()
       |> list.sort(fn(a, b) { string.compare(a.suite_name, b.suite_name) })
       |> expect.to_be_equal([
-        discovery.DuplicateSuiteName("Alpha"),
-        discovery.DuplicateSuiteName("Bravo"),
+        analysis.DuplicateSuiteName("Alpha"),
+        analysis.DuplicateSuiteName("Bravo"),
       ])
     }),
 
@@ -56,11 +56,11 @@ pub fn when_analysing_suites_suite() {
         Suite("Bravo", []),
         Suite("Charlie", [Test("One", tests.passing_assert)]),
       ]
-      |> discovery.analyse_suites()
+      |> analysis.analyse_suites()
       |> list.sort(fn(a, b) { string.compare(a.suite_name, b.suite_name) })
       |> expect.to_be_equal([
-        discovery.EmptySuite("Alpha"),
-        discovery.EmptySuite("Bravo"),
+        analysis.EmptySuite("Alpha"),
+        analysis.EmptySuite("Bravo"),
       ])
     }),
   ])

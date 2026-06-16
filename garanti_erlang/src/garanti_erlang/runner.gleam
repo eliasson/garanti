@@ -1,4 +1,5 @@
 import garanti
+import garanti/shared/analysis
 import garanti/shared/console
 import garanti/shared/report
 import garanti_erlang/internal/console_reporter
@@ -101,7 +102,7 @@ fn run_tests(
 }
 
 fn perform_analysis(suites: List(garanti.Suite)) -> List(report.Message) {
-  case discovery.analyse_suites(suites) {
+  case analysis.analyse_suites(suites) {
     [] -> [
       report.Message(report.Info, [
         report.Plain("Analysed suites: No problems found."),
@@ -109,7 +110,7 @@ fn perform_analysis(suites: List(garanti.Suite)) -> List(report.Message) {
     ]
     results ->
       results
-      |> list.map(discovery.describe_analysis_result)
+      |> list.map(analysis.describe_analysis_result)
       |> list.sort(string.compare)
       |> list.map(fn(msg) {
         report.Message(report.Warning, [
