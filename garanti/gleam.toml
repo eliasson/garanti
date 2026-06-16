@@ -3,9 +3,6 @@ version = "0.1.0"
 description = "Garanti is a Gleam test framework built around suites, parallel execution, and readable failure messages."
 licences = ["Apache-2.0"]
 
-# OTP is used by the runner. Maybe, someday, I will abstract that away and implement a JavaScript runner.
-target = "erlang"
-
 [repository]
 type = "github"
 user = "eliasson"
