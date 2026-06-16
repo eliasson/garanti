@@ -1,6 +1,6 @@
 import garanti.{Suite, Test}
 import garanti/expect
-import garanti/internal/list_ext
+import garanti/shared/list_ext
 
 pub fn list_extensions_suite() {
   Suite("List extensions", [
