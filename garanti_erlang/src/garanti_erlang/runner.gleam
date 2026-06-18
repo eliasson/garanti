@@ -9,7 +9,6 @@ import gleam/erlang/process
 import gleam/int
 import gleam/io
 import gleam/list
-import gleam/string
 
 /// Start a test run.
 /// - Discovery phase that identifies all available test suites.
