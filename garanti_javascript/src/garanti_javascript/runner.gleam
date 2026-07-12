@@ -3,6 +3,8 @@ import garanti/shared/analysis
 import garanti/shared/console
 import garanti/shared/report
 import garanti_javascript/internal/discovery
+import garanti_javascript/internal/suite
+import garanti_javascript/internal/reporter
 import gleam/int
 import gleam/javascript/promise.{type Promise}
 import gleam/list
@@ -44,16 +46,9 @@ pub fn run(level: garanti.LogLevel) -> Promise(Nil) {
       Nil
     }
     _ -> {
-      // TODO Implement the  executor.
-      console.print(
-        output,
-        report.Message(report.Success, [
-          report.Enriched("Running tests suites!", [
-            report.Negative,
-            report.Bold,
-          ]),
-        ]),
-      )
+        suites
+        |> list.map(suite.run)
+        |> reporter.report(output, _)
       Nil
     }
   }
