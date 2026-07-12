@@ -3,8 +3,8 @@ import garanti/shared/analysis
 import garanti/shared/console
 import garanti/shared/report
 import garanti_javascript/internal/discovery
-import garanti_javascript/internal/suite
 import garanti_javascript/internal/reporter
+import garanti_javascript/internal/suite
 import gleam/int
 import gleam/javascript/promise.{type Promise}
 import gleam/list
@@ -46,9 +46,9 @@ pub fn run(level: garanti.LogLevel) -> Promise(Nil) {
       Nil
     }
     _ -> {
-        suites
-        |> list.map(suite.run)
-        |> reporter.report(output, _)
+      suites
+      |> list.map(suite.run)
+      |> reporter.report(output, _)
       Nil
     }
   }
