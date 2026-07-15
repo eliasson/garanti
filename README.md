@@ -44,19 +44,34 @@ Also, tests should be managed in suites. This will give a group of tests a conte
   > I currently dog-fooding this library in one of my applications and will likely do some adjustments and extensions.
   > Hence, I am making the repository public but not publishing on hex.pm until it reaches v1.0.0.
 
-Add `garanti` to your `gleam.toml`:
+1. First you need to clone the git repository as a local clone.
+
+2. Add `garanti` to your `gleam.toml`:
 
 ```toml
 [dev-dependencies]
-garanti = { git = "https://github.com/eliasson/garanti", ref = "main" }
+garanti =  { path = "/home/you/stuff-from-the-internet/garanti" }
 ```
 
-Then set your test entrypoint to call the runner:
+3. Add the runner.
+
+Depending on your target VM you have to also add a separate runner. This is since the Erlang runner use OTP for parallelism and that is not available in JavaScript. A side effect of this is that the JavaScript runner will execute tests in sequence, and without support for timeouts.
+
+```toml
+[dev-dependencies]
+# NOTE, you should only use ONE of these.
+garanti_erlang =  { path = "/home/you/stuff-from-the-internet/garanti_erlang" }
+garanti_javascript =  { path = "/home/you/stuff-from-the-internet/garanti_javascript" }
+```
+
+4. Then set your test entrypoint to call the runner (which is also based on the target VM):
 
 ```gleam
 // test/my_project_test.gleam
 import garanti
-import garanti/runner
+// NOTE only import the runner you need.
+import garanti_erlang/runner
+import garanti_javascript/runner
 
 pub fn main() -> Nil {
   runner.run(garanti.Info)

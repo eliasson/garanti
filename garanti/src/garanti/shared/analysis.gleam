@@ -1,13 +1,9 @@
 import garanti.{type Suite}
-import garanti/internal/discovery_ffi
+import garanti/shared/report
+
 import gleam/list
 import gleam/set
 import gleam/string
-
-pub fn discover_all_suites() -> List(Suite) {
-  discovery_ffi.loaded_test_modules()
-  |> list.flat_map(discover_suites_in_module)
-}
 
 /// Represents the different issues found during suite analysis.
 pub type AnalysisResult {
@@ -37,6 +33,25 @@ pub fn describe_analysis_result(result: AnalysisResult) -> String {
   }
 }
 
+pub fn perform_analysis(suites: List(garanti.Suite)) -> List(report.Message) {
+  case analyse_suites(suites) {
+    [] -> [
+      report.Message(report.Info, [
+        report.Plain("Analysed suites: No problems found."),
+      ]),
+    ]
+    results ->
+      results
+      |> list.map(describe_analysis_result)
+      |> list.sort(string.compare)
+      |> list.map(fn(msg) {
+        report.Message(report.Warning, [
+          report.Enriched(msg, [report.Important]),
+        ])
+      })
+  }
+}
+
 fn analyse_suites_loop(
   suites: List(Suite),
   names: set.Set(String),
@@ -61,12 +76,4 @@ fn analyse_suites_loop(
       |> list.append(analyse_suites_loop(tail, set.insert(names, suite_name)))
     }
   }
-}
-
-fn discover_suites_in_module(module_name: String) -> List(Suite) {
-  discovery_ffi.module_exports(module_name)
-  |> list.filter(fn(export) {
-    export.arity == 0 && string.ends_with(export.name, "_suite")
-  })
-  |> list.map(fn(export) { discovery_ffi.apply_suite(module_name, export.name) })
 }

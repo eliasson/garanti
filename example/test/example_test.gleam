@@ -1,6 +1,6 @@
 import garanti.{type Suite, Suite, Test}
 import garanti/expect
-import garanti/runner
+import garanti_erlang/runner
 import gleam/erlang/process
 import gleam/option
 

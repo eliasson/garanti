@@ -1,9 +1,8 @@
-name = "garanti"
+name = "garanti_erlang"
 version = "0.1.0"
-description = "Garanti is a Gleam test framework built around suites, parallel execution, and readable failure messages."
+description = "Garanti test-runner for the Erlang target."
 licences = ["Apache-2.0"]
 
-# OTP is used by the runner. Maybe, someday, I will abstract that away and implement a JavaScript runner.
 target = "erlang"
 
 [repository]
@@ -12,9 +11,9 @@ user = "eliasson"
 repo = "garanti"
 
 [dependencies]
+garanti =  { path = "../garanti" }
 gleam_stdlib = ">= 0.44.0 and < 2.0.0"
 gleam_erlang = ">= 1.3.0 and < 2.0.0"
 logging = ">= 1.5.0 and < 2.0.0"
 gleam_otp = ">= 1.2.0 and < 2.0.0"
-
 [dev-dependencies]

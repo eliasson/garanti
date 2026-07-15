@@ -1,5 +1,5 @@
 import garanti
-import garanti/internal/report
+import garanti/shared/report
 import gleam/int
 import gleam/list
 

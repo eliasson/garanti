@@ -3,9 +3,9 @@
 // the `./example/` directory.
 
 import garanti
-import garanti/internal/console.{print}
-import garanti/internal/describer
-import garanti/internal/report
+import garanti/shared/console.{print}
+import garanti/shared/describer
+import garanti/shared/report
 import gleam/erlang/process.{type Subject}
 import gleam/list
 import gleam/otp/actor

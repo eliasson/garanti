@@ -1,9 +1,9 @@
 import garanti.{Suite, Test}
 import garanti/expect
-import garanti/internal/suite
-import garanti/support/suite_matcher
-import garanti/support/suite_probe
-import garanti/support/tests
+import garanti_erlang/internal/suite
+import garanti_erlang/support/suite_matcher
+import garanti_erlang/support/suite_probe
+import garanti_erlang/support/tests
 import gleam/erlang/process
 
 pub fn successful_suite_suite() {

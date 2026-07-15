@@ -3,7 +3,7 @@
 /// Most functions takes an `actual` and an `expected` value and returns a
 /// `garanti.AssertionResult` with the result.
 import garanti
-import garanti/internal/list_ext
+import garanti/shared/list_ext
 import gleam/list
 import gleam/option
 import gleam/order
