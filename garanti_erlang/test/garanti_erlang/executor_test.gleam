@@ -12,7 +12,9 @@ pub fn executor_suite() {
 
     Test("it should fail a failing test", fn() {
       executor.run(tests.failing_assert)
-      |> expect.to_be_equal(executor.Executed(garanti.Fail("set up to fail")))
+      |> expect.to_be_equal(
+        executor.Executed(garanti.Fail("set up to fail", [])),
+      )
     }),
 
     Test("it should fail execution for a panicking test", fn() {

@@ -4,9 +4,24 @@
 pub type AssertionResult {
   /// The test passed, the assertion(s) was fulfilled.
   Pass
-  /// The test failed, one or more assertion(s) was NOT fulfilled.
-  Fail(String)
+  /// A failed test with the list of expectations detailing what is not as expected.
+  Fail(summary: String, expectations: List(Expectation))
   Timeout
+}
+
+/// The expectation reported by a matcher as part of the `AssertionResult`. Used to give
+/// semantic meaning to a failure in order to display it more clearly.
+pub type Expectation {
+  /// The expected value described as a string.
+  Expected(String)
+  /// The actual value described as a string.
+  Actual(String)
+  /// The value NOT expected described as a string.
+  NotExpected(String)
+  /// When something is missing from an expected volume.
+  Missing(String)
+  /// When something is extra for (not expected to be part of) an expected volume.
+  Extra(String)
 }
 
 /// Test did not finish executing within the maximum allowed time slot.

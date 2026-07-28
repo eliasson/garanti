@@ -2,6 +2,14 @@
 ///
 /// Most functions takes an `actual` and an `expected` value and returns a
 /// `garanti.AssertionResult` with the result.
+/// On failure, the result also contains a list of `garanti.Expectation`s
+/// with structured detail (e.g. `Actual`/`Expected`, or `Missing`/`Extra`
+/// for collections) for reporters to display together with the summary
+/// message.
+///
+/// Ordering matchers (`to_be_greater`, `to_be_less`, and their `_or_equal`
+/// variants) only report the `Actual` value, since the comparison itself
+/// is already captured in the failure summary.
 import garanti
 import garanti/shared/list_ext
 import gleam/list
@@ -35,6 +43,10 @@ pub fn to_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
           string.inspect(expected),
           ".",
         ]),
+        [
+          garanti.Actual(string.inspect(actual)),
+          garanti.Expected(string.inspect(expected)),
+        ],
       )
   }
 }
@@ -62,6 +74,10 @@ pub fn to_not_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
           string.inspect(expected),
           ".",
         ]),
+        [
+          garanti.Actual(string.inspect(actual)),
+          garanti.NotExpected(string.inspect(expected)),
+        ],
       )
   }
 }
@@ -81,10 +97,10 @@ pub fn to_not_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
 /// // -> Pass
 ///
 /// expect.to_be_equivalent([1, 2], [1, 2, 3])
-/// // -> Fail("Actual value is missing element(s) [3]")
+/// // -> Fail("Expect to be equivalent:")
 ///
 /// expect.to_be_equivalent([1, 2, 3], [1, 2])
-/// // -> Fail("Actual value has extra element(s) [3]")
+/// // -> Fail("Expect to be equivalent:")
 /// ```
 pub fn to_be_equivalent(
   actual: List(a),
@@ -103,18 +119,16 @@ pub fn to_be_equivalent(
           }
         })
 
-      // Build the failure message. Start with the missing.
-      let msg = case missing, extra {
-        m, [] -> "is missing element(s) " <> describe_presence_list(m)
-        [], e -> "has extra element(s) " <> describe_presence_list(e)
-        m, e ->
-          "is missing element(s) "
-          <> describe_presence_list(m)
-          <> " and has extra element(s) "
-          <> describe_presence_list(e)
+      let expectations = case missing, extra {
+        m, [] -> [garanti.Missing(describe_presence_list(m))]
+        [], e -> [garanti.Extra(describe_presence_list(e))]
+        m, e -> [
+          garanti.Missing(describe_presence_list(m)),
+          garanti.Extra(describe_presence_list(e)),
+        ]
       }
 
-      garanti.Fail("Actual value " <> msg)
+      garanti.Fail("Expect to be equivalent:", expectations)
     }
   }
 }
@@ -124,11 +138,11 @@ pub fn to_be_equivalent(
 /// ## Examples
 ///
 /// ```gleam
-/// expect.to_be_some(option.Option(1), 1)
+/// expect.to_be_some(option.Some(1), 1)
 /// // -> Pass
 ///
 /// expect.to_be_some(option.None, "world")
-/// // -> Fail("Expected None to be Some of \"world\".")
+/// // -> Fail("Expected None to be \"world\".")
 /// ```
 pub fn to_be_some(
   actual: option.Option(a),
@@ -145,6 +159,10 @@ pub fn to_be_some(
           string.inspect(expected),
           ".",
         ]),
+        [
+          garanti.Actual(string.inspect(a)),
+          garanti.Expected(string.inspect(expected)),
+        ],
       )
     option.None ->
       garanti.Fail(
@@ -153,6 +171,10 @@ pub fn to_be_some(
           string.inspect(expected),
           ".",
         ]),
+        [
+          garanti.Actual("None"),
+          garanti.Expected(string.inspect(expected)),
+        ],
       )
   }
 }
@@ -166,7 +188,7 @@ pub fn to_be_some(
 /// // -> Pass
 ///
 /// expect.to_be_none(option.Some("hello"))
-/// // -> Fail("Expected \"world\" to be None.")
+/// // -> Fail("Expected \"hello\" to be None.")
 /// ```
 pub fn to_be_none(actual: option.Option(a)) -> garanti.AssertionResult {
   case actual {
@@ -178,6 +200,10 @@ pub fn to_be_none(actual: option.Option(a)) -> garanti.AssertionResult {
           string.inspect(a),
           " to be None.",
         ]),
+        [
+          garanti.Actual(string.inspect(a)),
+          garanti.Expected("None"),
+        ],
       )
   }
 }
@@ -211,7 +237,8 @@ pub fn to_be_ok_then(
     Error(err) ->
       garanti.Fail(
         "Expected actual to be Ok but it was an Error of "
-        <> string.inspect(err),
+          <> string.inspect(err),
+        [garanti.Actual(string.inspect(err)), garanti.Expected("Ok")],
       )
   }
 }
@@ -236,7 +263,8 @@ pub fn to_be_ok(actual: Result(a, b)) -> garanti.AssertionResult {
     Error(err) ->
       garanti.Fail(
         "Expected actual to be Ok but it was an Error of "
-        <> string.inspect(err),
+          <> string.inspect(err),
+        [garanti.Actual(string.inspect(err)), garanti.Expected("Ok")],
       )
   }
 }
@@ -258,7 +286,7 @@ pub fn to_be_ok(actual: Result(a, b)) -> garanti.AssertionResult {
 /// expect.to_be_equal(value, 404)
 /// // -> Pass
 ///
-/// expect.to_be_ok_error(Error(418), fn(n) { expect.to_be_equal(n, 404) })
+/// expect.to_be_error_then(Error(418), fn(n) { expect.to_be_equal(n, 404) })
 /// // -> Fail("Expected 418 to equal 404.")
 /// ```
 pub fn to_be_error_then(
@@ -269,7 +297,8 @@ pub fn to_be_error_then(
     Ok(value) ->
       garanti.Fail(
         "Expected actual to be Error but it was an Ok of "
-        <> string.inspect(value),
+          <> string.inspect(value),
+        [garanti.Actual(string.inspect(value)), garanti.Expected("Error")],
       )
     Error(err) -> t(err)
   }
@@ -294,7 +323,8 @@ pub fn to_be_error(actual: Result(a, b)) -> garanti.AssertionResult {
     Ok(value) ->
       garanti.Fail(
         "Expected actual to be Error but it was an Ok of "
-        <> string.inspect(value),
+          <> string.inspect(value),
+        [garanti.Actual(string.inspect(value)), garanti.Expected("Error")],
       )
     Error(_) -> garanti.Pass
   }
@@ -308,17 +338,17 @@ pub fn to_be_error(actual: Result(a, b)) -> garanti.AssertionResult {
 /// expect.to_be_empty([])
 /// // -> Pass
 ///
-/// expect.to_be_error([1, 2, 3])
-/// // -> Fail("Expected list to be empty but was [1, 2, 3]")
+/// expect.to_be_empty([1, 2, 3])
+/// // -> Fail("Expected list to be empty:")
 /// ```
 pub fn to_be_empty(actual: List(a)) -> garanti.AssertionResult {
   case actual {
     [] -> garanti.Pass
     _ -> {
-      garanti.Fail(
-        "Expected list to be empty but was "
-        <> list_ext.describe(actual, describe_list_limit),
-      )
+      garanti.Fail("Expected list to be empty:", [
+        garanti.Actual(list_ext.describe(actual, describe_list_limit)),
+        garanti.Expected("[]"),
+      ])
     }
   }
 }
@@ -342,14 +372,19 @@ pub fn to_contain(actual: List(a), expected: a) -> garanti.AssertionResult {
         [] -> {
           garanti.Fail(
             "Expected empty list to contain " <> string.inspect(expected),
+            [garanti.Actual("[]"), garanti.Expected(string.inspect(expected))],
           )
         }
         _ -> {
           garanti.Fail(
             "Expected list to contain "
-            <> string.inspect(expected)
-            <> " but contained "
-            <> list_ext.describe(actual, describe_list_limit),
+              <> string.inspect(expected)
+              <> " but contained "
+              <> list_ext.describe(actual, describe_list_limit),
+            [
+              garanti.Actual(list_ext.describe(actual, describe_list_limit)),
+              garanti.Expected(string.inspect(expected)),
+            ],
           )
         }
       }
@@ -362,10 +397,10 @@ pub fn to_contain(actual: List(a), expected: a) -> garanti.AssertionResult {
 /// ## Examples
 ///
 /// ```gleam
-/// expect.to_be_greater(3, 2)
+/// expect.to_be_greater(3, 2, int.compare)
 /// // -> Pass
 ///
-/// expect.to_be_greater(2, 3)
+/// expect.to_be_greater(2, 3, int.compare)
 /// // -> Fail("Expected 2 to be greater than 3")
 /// ```
 pub fn to_be_greater(
@@ -378,9 +413,13 @@ pub fn to_be_greater(
     _ ->
       garanti.Fail(
         "Expected "
-        <> string.inspect(actual)
-        <> " to be greater than "
-        <> string.inspect(expected),
+          <> string.inspect(actual)
+          <> " to be greater than "
+          <> string.inspect(expected),
+        [
+          garanti.Actual(string.inspect(actual)),
+          // What to add as "expected"? New ExpectGreaterThan is pretty specific...
+        ],
       )
   }
 }
@@ -394,7 +433,7 @@ pub fn to_be_greater(
 /// // -> Pass
 ///
 /// expect.to_be_greater_or_equal(2, 3)
-/// // -> Fail("Expected 2 to be greater or equal to 3")
+/// // -> Fail("Expected 2 to be greater than or equal to 3")
 /// ```
 pub fn to_be_greater_or_equal(
   actual: a,
@@ -405,9 +444,13 @@ pub fn to_be_greater_or_equal(
     order.Lt ->
       garanti.Fail(
         "Expected "
-        <> string.inspect(actual)
-        <> " to be greater or equal to "
-        <> string.inspect(expected),
+          <> string.inspect(actual)
+          <> " to be greater than or equal to "
+          <> string.inspect(expected),
+        [
+          garanti.Actual(string.inspect(actual)),
+          // What to add as "expected"? New ExpectGreaterThan is pretty specific...
+        ],
       )
     _ -> garanti.Pass
   }
@@ -434,9 +477,13 @@ pub fn to_be_less(
     _ ->
       garanti.Fail(
         "Expected "
-        <> string.inspect(actual)
-        <> " to be less than "
-        <> string.inspect(expected),
+          <> string.inspect(actual)
+          <> " to be less than "
+          <> string.inspect(expected),
+        [
+          garanti.Actual(string.inspect(actual)),
+          // What to add as "expected"? New ExpectLessThan is pretty specific...
+        ],
       )
   }
 }
@@ -461,9 +508,13 @@ pub fn to_be_less_or_equal(
     order.Gt ->
       garanti.Fail(
         "Expected "
-        <> string.inspect(actual)
-        <> " to be less than or equal to "
-        <> string.inspect(expected),
+          <> string.inspect(actual)
+          <> " to be less than or equal to "
+          <> string.inspect(expected),
+        [
+          garanti.Actual(string.inspect(actual)),
+          // What to add as "expected"? New ExpectLessThan is pretty specific...
+        ],
       )
     _ -> garanti.Pass
   }

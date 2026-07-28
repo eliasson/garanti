@@ -33,6 +33,8 @@ pub type Token {
   Indent
   /// Separate the output from the adjacent text (if applicable).
   Block(text: String)
+  /// Move the output to a new line if applicable.
+  NewLine
 }
 
 /// A message that is part of a test report.

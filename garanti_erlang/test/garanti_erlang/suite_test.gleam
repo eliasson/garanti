@@ -86,7 +86,7 @@ pub fn canceled_suite_suite() {
 
       case result {
         garanti.SuiteComplete(..) ->
-          garanti.Fail("Test suite  was not cancelled")
+          garanti.Fail("Test suite  was not cancelled", [])
 
         garanti.SuiteCancelled(..) -> garanti.Pass
       }

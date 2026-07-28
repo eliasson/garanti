@@ -8,7 +8,7 @@ pub fn passing_assert() -> garanti.AssertionResult {
 
 /// An always failing assert.
 pub fn failing_assert() -> garanti.AssertionResult {
-  garanti.Fail("set up to fail")
+  garanti.Fail("set up to fail", [])
 }
 
 /// An always panicking assert.
