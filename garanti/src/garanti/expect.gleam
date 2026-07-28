@@ -2,6 +2,14 @@
 ///
 /// Most functions takes an `actual` and an `expected` value and returns a
 /// `garanti.AssertionResult` with the result.
+/// On failure, the result also contains a list of `garanti.Expectation`s
+/// with structured detail (e.g. `Actual`/`Expected`, or `Missing`/`Extra`
+/// for collections) for reporters to display together with the summary
+/// message.
+///
+/// Ordering matchers (`to_be_greater`, `to_be_less`, and their `_or_equal`
+/// variants) only report the `Actual` value, since the comparison itself
+/// is already captured in the failure summary.
 import garanti
 import garanti/shared/list_ext
 import gleam/list
