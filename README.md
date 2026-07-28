@@ -3,25 +3,26 @@
 Garanti is a Gleam test framework built around suites, parallel execution and readable failure messages.
 
 ```gleam
-import garanti.{Suite, Test}
+import example
+import garanti.{type Suite, Suite, Test}
 import garanti/expect
 
 pub fn math_suite() -> Suite {
   Suite("math", [
     Test("should add two numbers", fn() {
-      math.add(2, 2)
+      example.add(2, 2)
       |> expect.to_be_equal(4)
     }),
 
     Test("should divide by two", fn() {
-      use result <- expect.to_be_ok_then(math.divide(4, 2))
+      use result <- expect.to_be_ok_then(example.divide(4, 2))
       expect.to_be_equal(result, 2)
     }),
 
     Test("should not divide by zero", fn() {
-      use result <- expect.to_be_error_then(math.divide(4, 0))
-      expect.to_be_equal(result, "Division by zero")
-    })
+      use result <- expect.to_be_error_then(example.divide(4, 0))
+      expect.to_be_equal(result, Nil)
+    }),
   ])
 }
 ```
@@ -115,16 +116,18 @@ Here is a snippet of the tests covering Garanti itself as an example of the test
   Discovered 23 suite(s).
   Analysed suites: No problems found.
   Running 23 suites...
-  Suite When matching to_not_be_equal completed successfully with 4 test(s)
-     Test it should pass when integers are NOT equal completed successfully
-     Test it should pass when strings are NOT equal completed successfully
-     Test it should fail when integers are equal completed successfully
-     Test it should fail when strings are equal completed successfully
+  Suite math completed successfully with 3 test(s)
+     Test should not divide by zero completed successfully
+     Test should divide by two completed successfully
+     Test should add two numbers completed successfully
   ...
-  Suite When suite is successful completed successfully with 3 test(s)
-    Test it should have 3 passed tests completed successfully
-    Test it should have 0 failing tests completed successfully
-    Test it should have 3 completed tests completed successfully
+  Suite to_be_equal completed with 1 failure(s)
+     Test should pass completed successfully
+     Test should fail failed with: 
+       Expected 1 to equal 2. 
+       Actual:  1 
+       Expected:  2 
+
   All 81 test(s) passed!
 ```
 
@@ -158,7 +161,7 @@ I want to keep the matchers few. When I write tests I prefer to transform comple
 There is no before each. You can do complex setup before creating the Suite and the tests will have access to that. Also, since Gleam is immutable there is no risk of tests interfering with each other using that state. Test-specific modifications are done in each test if needed, keeping the state local and nice.
 
 ```gleam
-import garanti.{Suite, Test}
+import garanti.{type Suite, Test}
 import garanti/expect
 
 pub fn math_suite() -> Suite {
