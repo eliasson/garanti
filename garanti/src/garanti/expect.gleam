@@ -256,7 +256,7 @@ pub fn to_be_ok(actual: Result(a, b)) -> garanti.AssertionResult {
       garanti.Fail(
         "Expected actual to be Ok but it was an Error of "
           <> string.inspect(err),
-        [],
+        [garanti.Actual(string.inspect(err)), garanti.Expected("Ok")],
       )
   }
 }

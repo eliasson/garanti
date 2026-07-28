@@ -30,7 +30,10 @@ pub fn to_be_ok_suite() {
     Test("it should fail if actual is Error", fn() {
       expect.to_be_ok(Error(Nil))
       |> expect.to_be_equal(
-        garanti.Fail("Expected actual to be Ok but it was an Error of Nil", []),
+        garanti.Fail("Expected actual to be Ok but it was an Error of Nil", [
+          garanti.Actual("Nil"),
+          garanti.Expected("Ok"),
+        ]),
       )
     }),
   ])

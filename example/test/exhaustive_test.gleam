@@ -69,3 +69,12 @@ pub fn to_be_ok_then_suite() -> Suite {
     }),
   ])
 }
+
+pub fn to_be_ok_suite() -> Suite {
+  Suite("to_be_ok", [
+    Test("should pass", fn() { expect.to_be_ok(Ok(42)) }),
+    Test("should fail due to actual is not OK", fn() {
+      expect.to_be_ok(Error(1))
+    }),
+  ])
+}
