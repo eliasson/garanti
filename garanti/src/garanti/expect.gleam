@@ -290,7 +290,7 @@ pub fn to_be_error_then(
       garanti.Fail(
         "Expected actual to be Error but it was an Ok of "
           <> string.inspect(value),
-        [],
+        [garanti.Actual(string.inspect(value)), garanti.Expected("Error")],
       )
     Error(err) -> t(err)
   }

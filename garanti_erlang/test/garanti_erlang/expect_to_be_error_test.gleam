@@ -13,7 +13,10 @@ pub fn to_be_error_then_suite() {
     Test("it should not call the given test callback for Error values", fn() {
       expect.to_be_error_then(Ok(1), fn(_: Int) { garanti.Pass })
       |> expect.to_be_equal(
-        garanti.Fail("Expected actual to be Error but it was an Ok of 1", []),
+        garanti.Fail("Expected actual to be Error but it was an Ok of 1", [
+          garanti.Actual("1"),
+          garanti.Expected("Error"),
+        ]),
       )
     }),
 

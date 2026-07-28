@@ -78,3 +78,14 @@ pub fn to_be_ok_suite() -> Suite {
     }),
   ])
 }
+
+pub fn to_be_error_then_suite() -> Suite {
+  Suite("to_be_error_then", [
+    Test("should pass", fn() {
+      expect.to_be_error_then(Error(42), fn(n) { expect.to_be_equal(n, 42) })
+    }),
+    Test("should fail due to actual is not Error", fn() {
+      expect.to_be_error_then(Ok(1), fn(n) { expect.to_be_equal(n, 42) })
+    }),
+  ])
+}
