@@ -11,7 +11,10 @@ pub fn to_be_ok_then_suite() {
     Test("it should not the given test callback for Error values", fn() {
       expect.to_be_ok_then(Error(Nil), fn(_: Int) { garanti.Pass })
       |> expect.to_be_equal(
-        garanti.Fail("Expected actual to be Ok but it was an Error of Nil", []),
+        garanti.Fail("Expected actual to be Ok but it was an Error of Nil", [
+          garanti.Actual("Nil"),
+          garanti.Expected("Ok"),
+        ]),
       )
     }),
   ])

@@ -58,3 +58,14 @@ pub fn to_be_none_suite() -> Suite {
     }),
   ])
 }
+
+pub fn to_be_ok_then_suite() -> Suite {
+  Suite("to_be_ok_then", [
+    Test("should pass", fn() {
+      expect.to_be_ok_then(Ok(42), fn(n) { expect.to_be_equal(n, 42) })
+    }),
+    Test("should fail due to actual is not OK", fn() {
+      expect.to_be_ok_then(Error(1), fn(n) { expect.to_be_equal(n, 42) })
+    }),
+  ])
+}
