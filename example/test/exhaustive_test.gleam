@@ -105,3 +105,12 @@ pub fn to_be_empty_suite() -> Suite {
     Test("should fail due to not empty", fn() { expect.to_be_empty([1]) }),
   ])
 }
+
+pub fn to_contain_suite() -> Suite {
+  Suite("to_contain", [
+    Test("should pass", fn() { expect.to_contain([1, 2, 3], 2) }),
+    Test("should fail due to not empty", fn() {
+      expect.to_contain([1, 2, 3], 4)
+    }),
+  ])
+}

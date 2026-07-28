@@ -364,7 +364,7 @@ pub fn to_contain(actual: List(a), expected: a) -> garanti.AssertionResult {
         [] -> {
           garanti.Fail(
             "Expected empty list to contain " <> string.inspect(expected),
-            [],
+            [garanti.Actual("[]"), garanti.Expected(string.inspect(expected))],
           )
         }
         _ -> {
@@ -373,7 +373,10 @@ pub fn to_contain(actual: List(a), expected: a) -> garanti.AssertionResult {
               <> string.inspect(expected)
               <> " but contained "
               <> list_ext.describe(actual, describe_list_limit),
-            [],
+            [
+              garanti.Actual(list_ext.describe(actual, describe_list_limit)),
+              garanti.Expected(string.inspect(expected)),
+            ],
           )
         }
       }
