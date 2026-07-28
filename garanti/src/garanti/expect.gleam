@@ -192,7 +192,10 @@ pub fn to_be_none(actual: option.Option(a)) -> garanti.AssertionResult {
           string.inspect(a),
           " to be None.",
         ]),
-        [],
+        [
+          garanti.Actual(string.inspect(a)),
+          garanti.Expected("None"),
+        ],
       )
   }
 }

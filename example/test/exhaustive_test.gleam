@@ -49,3 +49,12 @@ pub fn to_be_some_suite() -> Suite {
     }),
   ])
 }
+
+pub fn to_be_none_suite() -> Suite {
+  Suite("to_be_none", [
+    Test("should pass", fn() { expect.to_be_none(option.None) }),
+    Test("should fail due to actual is Some", fn() {
+      expect.to_be_none(option.Some(1))
+    }),
+  ])
+}
