@@ -37,7 +37,7 @@ pub fn to_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
         ]),
         [
           garanti.Actual(string.inspect(actual)),
-          garanti.Expected(string.inspect(expected))
+          garanti.Expected(string.inspect(expected)),
         ],
       )
   }
@@ -66,7 +66,10 @@ pub fn to_not_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
           string.inspect(expected),
           ".",
         ]),
-        [],
+        [
+          garanti.Actual(string.inspect(actual)),
+          garanti.NotExpected(string.inspect(expected)),
+        ],
       )
   }
 }

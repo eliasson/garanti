@@ -16,6 +16,8 @@ pub type Expectation {
   Expected(String)
   /// The actual value described as a string.
   Actual(String)
+  /// The value NOT expected described as a string.
+  NotExpected(String)
 }
 
 /// Test did not finish executing within the maximum allowed time slot.
