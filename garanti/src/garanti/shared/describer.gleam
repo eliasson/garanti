@@ -111,6 +111,22 @@ fn describe(expectation: garanti.Expectation) -> List(report.Token) {
       report.Enriched("NOT expected: ", [report.Bold]),
       report.Enriched(v, [report.Negative, report.Bold]),
     ]
+
+    garanti.Missing(v) -> [
+      report.NewLine,
+      report.Indent,
+      report.Indent,
+      report.Enriched("Missing: ", [report.Bold]),
+      report.Enriched(v, [report.Negative, report.Bold]),
+    ]
+
+    garanti.Extra(v) -> [
+      report.NewLine,
+      report.Indent,
+      report.Indent,
+      report.Enriched("Extra: ", [report.Bold]),
+      report.Enriched(v, [report.Negative, report.Bold]),
+    ]
   }
 }
 

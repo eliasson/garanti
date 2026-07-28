@@ -111,18 +111,16 @@ pub fn to_be_equivalent(
           }
         })
 
-      // Build the failure message. Start with the missing.
-      let msg = case missing, extra {
-        m, [] -> "is missing element(s) " <> describe_presence_list(m)
-        [], e -> "has extra element(s) " <> describe_presence_list(e)
-        m, e ->
-          "is missing element(s) "
-          <> describe_presence_list(m)
-          <> " and has extra element(s) "
-          <> describe_presence_list(e)
+      let expectations = case missing, extra {
+        m, [] -> [garanti.Missing(describe_presence_list(m))]
+        [], e -> [garanti.Extra(describe_presence_list(e))]
+        m, e -> [
+          garanti.Missing(describe_presence_list(m)),
+          garanti.Extra(describe_presence_list(e)),
+        ]
       }
 
-      garanti.Fail("Actual value " <> msg, [])
+      garanti.Fail("Expect to be equivalent:", expectations)
     }
   }
 }

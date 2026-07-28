@@ -21,3 +21,18 @@ pub fn to_not_be_equal_suite() -> Suite {
     Test("should fail", fn() { expect.to_not_be_equal(1, 1) }),
   ])
 }
+
+pub fn to_be_equivalent_suite() -> Suite {
+  Suite("to_be_equivalent", [
+    Test("should pass", fn() { expect.to_be_equivalent([1, 2, 3], [3, 1, 2]) }),
+    Test("should fail due to missing", fn() {
+      expect.to_be_equivalent([1, 2], [1, 2, 3])
+    }),
+    Test("should fail due to extra", fn() {
+      expect.to_be_equivalent([1, 2, 3], [1, 2])
+    }),
+    Test("should fail due to both missing and extra", fn() {
+      expect.to_be_equivalent([1, 4], [1, 2, 3])
+    }),
+  ])
+}

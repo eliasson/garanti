@@ -18,6 +18,10 @@ pub type Expectation {
   Actual(String)
   /// The value NOT expected described as a string.
   NotExpected(String)
+  /// When something is missing from an expected volume.
+  Missing(String)
+  /// When something is extra for (not expected to be part of) an expected volume.
+  Extra(String)
 }
 
 /// Test did not finish executing within the maximum allowed time slot.
