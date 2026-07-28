@@ -433,7 +433,7 @@ pub fn to_be_greater(
 /// // -> Pass
 ///
 /// expect.to_be_greater_or_equal(2, 3)
-/// // -> Fail("Expected 2 to be greater or equal to 3")
+/// // -> Fail("Expected 2 to be greater than or equal to 3")
 /// ```
 pub fn to_be_greater_or_equal(
   actual: a,
@@ -445,7 +445,7 @@ pub fn to_be_greater_or_equal(
       garanti.Fail(
         "Expected "
           <> string.inspect(actual)
-          <> " to be greater or equal to "
+          <> " to be greater than or equal to "
           <> string.inspect(expected),
         [
           garanti.Actual(string.inspect(actual)),
