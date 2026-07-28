@@ -389,10 +389,10 @@ pub fn to_contain(actual: List(a), expected: a) -> garanti.AssertionResult {
 /// ## Examples
 ///
 /// ```gleam
-/// expect.to_be_greater(3, 2)
+/// expect.to_be_greater(3, 2, int.compare)
 /// // -> Pass
 ///
-/// expect.to_be_greater(2, 3)
+/// expect.to_be_greater(2, 3, int.compare)
 /// // -> Fail("Expected 2 to be greater than 3")
 /// ```
 pub fn to_be_greater(
@@ -408,7 +408,10 @@ pub fn to_be_greater(
           <> string.inspect(actual)
           <> " to be greater than "
           <> string.inspect(expected),
-        [],
+        [
+          garanti.Actual(string.inspect(actual)),
+          // What to add as "expected"? New ExpectGreaterThan is pretty specific...
+        ],
       )
   }
 }

@@ -1,5 +1,6 @@
 import garanti.{type Suite, Suite, Test}
 import garanti/expect
+import gleam/int
 import gleam/option
 
 // The goal is to have this example exhaustive on both passing and failing tests for
@@ -111,6 +112,15 @@ pub fn to_contain_suite() -> Suite {
     Test("should pass", fn() { expect.to_contain([1, 2, 3], 2) }),
     Test("should fail due to not empty", fn() {
       expect.to_contain([1, 2, 3], 4)
+    }),
+  ])
+}
+
+pub fn to_be_greater_suite() -> Suite {
+  Suite("to_be_greater", [
+    Test("should pass", fn() { expect.to_be_greater(3, 2, int.compare) }),
+    Test("should fail due to not empty", fn() {
+      expect.to_be_greater(2, 3, int.compare)
     }),
   ])
 }
