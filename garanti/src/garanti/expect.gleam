@@ -472,7 +472,10 @@ pub fn to_be_less(
           <> string.inspect(actual)
           <> " to be less than "
           <> string.inspect(expected),
-        [],
+        [
+          garanti.Actual(string.inspect(actual)),
+          // What to add as "expected"? New ExpectLessThan is pretty specific...
+        ],
       )
   }
 }
