@@ -16,8 +16,8 @@ pub fn suite_results(
         garanti.TestResult(name, result: garanti.Pass) -> {
           #(successful_test(name), 0)
         }
-        garanti.TestResult(name:, result: garanti.Fail(reason, _)) -> {
-          #(failed_test(name, reason), 1)
+        garanti.TestResult(name:, result: garanti.Fail(summary, expectation)) -> {
+          #(failed_test(name, summary, expectation), 1)
         }
         garanti.TestResult(name:, result: garanti.Timeout) -> {
           #(timeout_test(name), 1)
@@ -54,16 +54,56 @@ fn suite_completion(total_count: Int, failure_count: Int) {
   }
 }
 
-fn failed_test(name: String, reason: String) -> List(report.Message) {
-  [
-    report.Message(report.Error, [
-      report.Indent,
-      report.Enriched("Test", [report.Secondary]),
-      report.Enriched(name, [report.Name]),
-      report.Enriched("failed with:", [report.Negative, report.Bold]),
-      report.Block(reason),
-    ]),
+fn failed_test(
+  name: String,
+  summary: String,
+  expectations: List(garanti.Expectation),
+) -> List(report.Message) {
+  let message = [
+    report.Indent,
+    report.Enriched("Test", [report.Secondary]),
+    report.Enriched(name, [report.Name]),
+    report.Enriched("failed with:", [report.Negative, report.Bold]),
+    report.NewLine,
+    report.Indent,
+    report.Indent,
+    report.Enriched(summary, [report.Name]),
   ]
+
+  // Describe all expectations (one per line).
+  let exp =
+    expectations
+    |> list.map(describe)
+    |> list.flatten
+    |> list.append([report.NewLine])
+
+  // End the message with a newline to make the failure easy to spot.
+  let tokens = list.append(message, exp)
+
+  // Now produce the entire message
+  [
+    report.Message(report.Error, tokens),
+  ]
+}
+
+fn describe(expectation: garanti.Expectation) -> List(report.Token) {
+  // Produce one indented line per expectation
+  case expectation {
+    garanti.Actual(a) -> [
+      report.NewLine,
+      report.Indent,
+      report.Indent,
+      report.Enriched("Actual: ", [report.Bold]),
+      report.Enriched(a, [report.Negative, report.Bold]),
+    ]
+    garanti.Expected(e) -> [
+      report.NewLine,
+      report.Indent,
+      report.Indent,
+      report.Enriched("Expected: ", [report.Bold]),
+      report.Enriched(e, [report.Positive, report.Bold]),
+    ]
+  }
 }
 
 fn successful_test(name: String) -> List(report.Message) {

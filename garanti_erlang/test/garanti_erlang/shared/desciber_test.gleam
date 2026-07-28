@@ -1,7 +1,7 @@
 import garanti.{Suite, Test}
 import garanti/expect
 import garanti/shared/describer
-import garanti/shared/report.{Block, Enriched, Indent, Info, Message}
+import garanti/shared/report.{Enriched, Indent, Info, Message}
 import gleam/list
 
 pub fn run_summary_suite() {
@@ -87,9 +87,13 @@ pub fn describer_suite() {
           Enriched("Test", [report.Secondary]),
           Enriched("test 1", [report.Name]),
           Enriched("failed with:", [report.Negative, report.Bold]),
-          Block("Oh no!"),
+          report.NewLine,
+          Indent,
+          Indent,
+          Enriched("Oh no!", [report.Name]),
+          report.NewLine,
         ]),
-        Message(report.Info, [
+        Message(Info, [
           Indent,
           Enriched("Test", [report.Secondary]),
           Enriched("test 2", [report.Name]),
@@ -101,7 +105,11 @@ pub fn describer_suite() {
           Enriched("Test", [report.Secondary]),
           Enriched("test 3", [report.Name]),
           Enriched("failed with:", [report.Negative, report.Bold]),
-          Block("No, not me too..."),
+          report.NewLine,
+          Indent,
+          Indent,
+          Enriched("No, not me too...", [report.Name]),
+          report.NewLine,
         ]),
       ])
     }),
