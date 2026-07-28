@@ -1,5 +1,6 @@
 import garanti.{type Suite, Suite, Test}
 import garanti/expect
+import gleam/option
 
 // The goal is to have this example exhaustive on both passing and failing tests for
 // each matcher.
@@ -33,6 +34,18 @@ pub fn to_be_equivalent_suite() -> Suite {
     }),
     Test("should fail due to both missing and extra", fn() {
       expect.to_be_equivalent([1, 4], [1, 2, 3])
+    }),
+  ])
+}
+
+pub fn to_be_some_suite() -> Suite {
+  Suite("to_be_some", [
+    Test("should pass", fn() { expect.to_be_some(option.Some(1), 1) }),
+    Test("should fail due to actual is not expected", fn() {
+      expect.to_be_some(option.Some(1), 2)
+    }),
+    Test("should fail due to actual is None", fn() {
+      expect.to_be_some(option.None, "world")
     }),
   ])
 }

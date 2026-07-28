@@ -130,7 +130,7 @@ pub fn to_be_equivalent(
 /// ## Examples
 ///
 /// ```gleam
-/// expect.to_be_some(option.Option(1), 1)
+/// expect.to_be_some(option.Some(1), 1)
 /// // -> Pass
 ///
 /// expect.to_be_some(option.None, "world")
@@ -151,7 +151,10 @@ pub fn to_be_some(
           string.inspect(expected),
           ".",
         ]),
-        [],
+        [
+          garanti.Actual(string.inspect(a)),
+          garanti.Expected(string.inspect(expected)),
+        ],
       )
     option.None ->
       garanti.Fail(
@@ -160,7 +163,10 @@ pub fn to_be_some(
           string.inspect(expected),
           ".",
         ]),
-        [],
+        [
+          garanti.Actual("None"),
+          garanti.Expected(string.inspect(expected)),
+        ],
       )
   }
 }
