@@ -11,12 +11,12 @@ pub fn to_be_some_suite() {
 
     Test("it should fail when actual is None", fn() {
       expect.to_be_some(option.None, 12)
-      |> expect.to_be_equal(garanti.Fail("Expected None to be 12."))
+      |> expect.to_be_equal(garanti.Fail("Expected None to be 12.", []))
     }),
 
     Test("it should fail when when actual is different than expected", fn() {
       expect.to_be_some(option.Some("one"), "two")
-      |> expect.to_be_equal(garanti.Fail("Expected \"one\" to be \"two\"."))
+      |> expect.to_be_equal(garanti.Fail("Expected \"one\" to be \"two\".", []))
     }),
   ])
 }

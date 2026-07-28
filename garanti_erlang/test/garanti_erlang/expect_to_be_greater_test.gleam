@@ -17,12 +17,12 @@ pub fn to_be_greater_suite() {
 
     Test("it should fail when values are equal", fn() {
       expect.to_be_greater(1, 1, int.compare)
-      |> expect.to_be_equal(garanti.Fail("Expected 1 to be greater than 1"))
+      |> expect.to_be_equal(garanti.Fail("Expected 1 to be greater than 1", []))
     }),
 
     Test("it should fail when actual value is smaller", fn() {
       expect.to_be_greater(1, 3, int.compare)
-      |> expect.to_be_equal(garanti.Fail("Expected 1 to be greater than 3"))
+      |> expect.to_be_equal(garanti.Fail("Expected 1 to be greater than 3", []))
     }),
   ])
 }
@@ -46,9 +46,9 @@ pub fn to_be_greater_or_equal_suite() {
 
     Test("it should fail when actual value is smaller", fn() {
       expect.to_be_greater_or_equal(1, 3, int.compare)
-      |> expect.to_be_equal(garanti.Fail(
-        "Expected 1 to be greater or equal to 3",
-      ))
+      |> expect.to_be_equal(
+        garanti.Fail("Expected 1 to be greater or equal to 3", []),
+      )
     }),
   ])
 }

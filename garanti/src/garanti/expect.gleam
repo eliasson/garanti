@@ -35,6 +35,7 @@ pub fn to_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
           string.inspect(expected),
           ".",
         ]),
+        [],
       )
   }
 }
@@ -62,6 +63,7 @@ pub fn to_not_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
           string.inspect(expected),
           ".",
         ]),
+        [],
       )
   }
 }
@@ -114,7 +116,7 @@ pub fn to_be_equivalent(
           <> describe_presence_list(e)
       }
 
-      garanti.Fail("Actual value " <> msg)
+      garanti.Fail("Actual value " <> msg, [])
     }
   }
 }
@@ -145,6 +147,7 @@ pub fn to_be_some(
           string.inspect(expected),
           ".",
         ]),
+        [],
       )
     option.None ->
       garanti.Fail(
@@ -153,6 +156,7 @@ pub fn to_be_some(
           string.inspect(expected),
           ".",
         ]),
+        [],
       )
   }
 }
@@ -178,6 +182,7 @@ pub fn to_be_none(actual: option.Option(a)) -> garanti.AssertionResult {
           string.inspect(a),
           " to be None.",
         ]),
+        [],
       )
   }
 }
@@ -211,7 +216,8 @@ pub fn to_be_ok_then(
     Error(err) ->
       garanti.Fail(
         "Expected actual to be Ok but it was an Error of "
-        <> string.inspect(err),
+          <> string.inspect(err),
+        [],
       )
   }
 }
@@ -236,7 +242,8 @@ pub fn to_be_ok(actual: Result(a, b)) -> garanti.AssertionResult {
     Error(err) ->
       garanti.Fail(
         "Expected actual to be Ok but it was an Error of "
-        <> string.inspect(err),
+          <> string.inspect(err),
+        [],
       )
   }
 }
@@ -269,7 +276,8 @@ pub fn to_be_error_then(
     Ok(value) ->
       garanti.Fail(
         "Expected actual to be Error but it was an Ok of "
-        <> string.inspect(value),
+          <> string.inspect(value),
+        [],
       )
     Error(err) -> t(err)
   }
@@ -294,7 +302,8 @@ pub fn to_be_error(actual: Result(a, b)) -> garanti.AssertionResult {
     Ok(value) ->
       garanti.Fail(
         "Expected actual to be Error but it was an Ok of "
-        <> string.inspect(value),
+          <> string.inspect(value),
+        [],
       )
     Error(_) -> garanti.Pass
   }
@@ -317,7 +326,8 @@ pub fn to_be_empty(actual: List(a)) -> garanti.AssertionResult {
     _ -> {
       garanti.Fail(
         "Expected list to be empty but was "
-        <> list_ext.describe(actual, describe_list_limit),
+          <> list_ext.describe(actual, describe_list_limit),
+        [],
       )
     }
   }
@@ -342,14 +352,16 @@ pub fn to_contain(actual: List(a), expected: a) -> garanti.AssertionResult {
         [] -> {
           garanti.Fail(
             "Expected empty list to contain " <> string.inspect(expected),
+            [],
           )
         }
         _ -> {
           garanti.Fail(
             "Expected list to contain "
-            <> string.inspect(expected)
-            <> " but contained "
-            <> list_ext.describe(actual, describe_list_limit),
+              <> string.inspect(expected)
+              <> " but contained "
+              <> list_ext.describe(actual, describe_list_limit),
+            [],
           )
         }
       }
@@ -378,9 +390,10 @@ pub fn to_be_greater(
     _ ->
       garanti.Fail(
         "Expected "
-        <> string.inspect(actual)
-        <> " to be greater than "
-        <> string.inspect(expected),
+          <> string.inspect(actual)
+          <> " to be greater than "
+          <> string.inspect(expected),
+        [],
       )
   }
 }
@@ -405,9 +418,10 @@ pub fn to_be_greater_or_equal(
     order.Lt ->
       garanti.Fail(
         "Expected "
-        <> string.inspect(actual)
-        <> " to be greater or equal to "
-        <> string.inspect(expected),
+          <> string.inspect(actual)
+          <> " to be greater or equal to "
+          <> string.inspect(expected),
+        [],
       )
     _ -> garanti.Pass
   }
@@ -434,9 +448,10 @@ pub fn to_be_less(
     _ ->
       garanti.Fail(
         "Expected "
-        <> string.inspect(actual)
-        <> " to be less than "
-        <> string.inspect(expected),
+          <> string.inspect(actual)
+          <> " to be less than "
+          <> string.inspect(expected),
+        [],
       )
   }
 }
@@ -461,9 +476,10 @@ pub fn to_be_less_or_equal(
     order.Gt ->
       garanti.Fail(
         "Expected "
-        <> string.inspect(actual)
-        <> " to be less than or equal to "
-        <> string.inspect(expected),
+          <> string.inspect(actual)
+          <> " to be less than or equal to "
+          <> string.inspect(expected),
+        [],
       )
     _ -> garanti.Pass
   }

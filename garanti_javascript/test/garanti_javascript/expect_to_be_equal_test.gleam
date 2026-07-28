@@ -15,14 +15,14 @@ pub fn to_be_equal_suite() {
 
     Test("it should fail when intergers are NOT equal", fn() {
       expect.to_be_equal(12, 22)
-      |> expect.to_be_equal(garanti.Fail("Expected 12 to equal 22."))
+      |> expect.to_be_equal(garanti.Fail("Expected 12 to equal 22.", []))
     }),
 
     Test("it should fail when strings are NOT equal", fn() {
       expect.to_be_equal("abrakadabra", "simsalabim")
-      |> expect.to_be_equal(garanti.Fail(
-        "Expected \"abrakadabra\" to equal \"simsalabim\".",
-      ))
+      |> expect.to_be_equal(
+        garanti.Fail("Expected \"abrakadabra\" to equal \"simsalabim\".", []),
+      )
     }),
   ])
 }
@@ -41,14 +41,14 @@ pub fn to_not_be_equal_suite() {
 
     Test("it should fail when integers are equal", fn() {
       expect.to_not_be_equal(12, 12)
-      |> expect.to_be_equal(garanti.Fail("Expected 12 to NOT equal 12."))
+      |> expect.to_be_equal(garanti.Fail("Expected 12 to NOT equal 12.", []))
     }),
 
     Test("it should fail when strings are equal", fn() {
       expect.to_not_be_equal("Abba", "Abba")
-      |> expect.to_be_equal(garanti.Fail(
-        "Expected \"Abba\" to NOT equal \"Abba\".",
-      ))
+      |> expect.to_be_equal(
+        garanti.Fail("Expected \"Abba\" to NOT equal \"Abba\".", []),
+      )
     }),
   ])
 }

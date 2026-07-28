@@ -17,12 +17,12 @@ pub fn to_be_less_suite() {
 
     Test("it should fail when values are equal", fn() {
       expect.to_be_less(1, 1, int.compare)
-      |> expect.to_be_equal(garanti.Fail("Expected 1 to be less than 1"))
+      |> expect.to_be_equal(garanti.Fail("Expected 1 to be less than 1", []))
     }),
 
     Test("it should fail when actual value is greater", fn() {
       expect.to_be_less(3, 1, int.compare)
-      |> expect.to_be_equal(garanti.Fail("Expected 3 to be less than 1"))
+      |> expect.to_be_equal(garanti.Fail("Expected 3 to be less than 1", []))
     }),
   ])
 }
@@ -46,9 +46,9 @@ pub fn to_be_less_or_equal_suite() {
 
     Test("it should fail when actual value is greater", fn() {
       expect.to_be_less_or_equal(3, 1, int.compare)
-      |> expect.to_be_equal(garanti.Fail(
-        "Expected 3 to be less than or equal to 1",
-      ))
+      |> expect.to_be_equal(
+        garanti.Fail("Expected 3 to be less than or equal to 1", []),
+      )
     }),
   ])
 }

@@ -4,15 +4,15 @@ import garanti/expect
 pub fn to_be_ok_then_suite() {
   Suite("Matching to_be_ok_then", [
     Test("it should return the assertion result from the callbakc", fn() {
-      expect.to_be_ok_then(Ok(1), fn(_: Int) { garanti.Fail("Faked error") })
-      |> expect.to_be_equal(garanti.Fail("Faked error"))
+      expect.to_be_ok_then(Ok(1), fn(_: Int) { garanti.Fail("Faked error", []) })
+      |> expect.to_be_equal(garanti.Fail("Faked error", []))
     }),
 
     Test("it should not the given test callback for Error values", fn() {
       expect.to_be_ok_then(Error(Nil), fn(_: Int) { garanti.Pass })
-      |> expect.to_be_equal(garanti.Fail(
-        "Expected actual to be Ok but it was an Error of Nil",
-      ))
+      |> expect.to_be_equal(
+        garanti.Fail("Expected actual to be Ok but it was an Error of Nil", []),
+      )
     }),
   ])
 }
@@ -26,9 +26,9 @@ pub fn to_be_ok_suite() {
 
     Test("it should fail if actual is Error", fn() {
       expect.to_be_ok(Error(Nil))
-      |> expect.to_be_equal(garanti.Fail(
-        "Expected actual to be Ok but it was an Error of Nil",
-      ))
+      |> expect.to_be_equal(
+        garanti.Fail("Expected actual to be Ok but it was an Error of Nil", []),
+      )
     }),
   ])
 }

@@ -33,9 +33,9 @@ pub fn run_summary_suite() {
 pub fn describer_suite() {
   let result =
     describer.suite_results("TestSuite", [
-      garanti.TestResult("test 1", garanti.Fail("Oh no!")),
+      garanti.TestResult("test 1", garanti.Fail("Oh no!", [])),
       garanti.TestResult("test 2", garanti.Pass),
-      garanti.TestResult("test 3", garanti.Fail("No, not me too...")),
+      garanti.TestResult("test 3", garanti.Fail("No, not me too...", [])),
     ])
 
   Suite("When describing test result", [

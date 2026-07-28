@@ -20,7 +20,10 @@ pub fn have_been_cancelled(
 ) -> garanti.AssertionResult {
   case result {
     garanti.SuiteComplete(name, ..) ->
-      garanti.Fail(string.concat(["Test suite ", name, " was not cancelled"]))
+      garanti.Fail(
+        string.concat(["Test suite ", name, " was not cancelled"]),
+        [],
+      )
     garanti.SuiteCancelled(..) -> garanti.Pass
   }
 }
@@ -35,7 +38,7 @@ pub fn have_passing_tests(
       |> list.count(fn(r) {
         case r.result {
           garanti.Pass -> True
-          garanti.Fail(_) -> False
+          garanti.Fail(_, _) -> False
           garanti.Timeout -> False
         }
       })
@@ -56,7 +59,7 @@ pub fn have_failing_tests(
       |> list.count(fn(r) {
         case r.result {
           garanti.Pass -> False
-          garanti.Fail(_) -> True
+          garanti.Fail(_, _) -> True
           garanti.Timeout -> True
         }
       })

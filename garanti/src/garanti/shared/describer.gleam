@@ -16,7 +16,7 @@ pub fn suite_results(
         garanti.TestResult(name, result: garanti.Pass) -> {
           #(successful_test(name), 0)
         }
-        garanti.TestResult(name:, result: garanti.Fail(reason)) -> {
+        garanti.TestResult(name:, result: garanti.Fail(reason, _)) -> {
           #(failed_test(name, reason), 1)
         }
         garanti.TestResult(name:, result: garanti.Timeout) -> {
