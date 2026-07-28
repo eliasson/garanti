@@ -97,10 +97,10 @@ pub fn to_not_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
 /// // -> Pass
 ///
 /// expect.to_be_equivalent([1, 2], [1, 2, 3])
-/// // -> Fail("Actual value is missing element(s) [3]")
+/// // -> Fail("Expect to be equivalent:")
 ///
 /// expect.to_be_equivalent([1, 2, 3], [1, 2])
-/// // -> Fail("Actual value has extra element(s) [3]")
+/// // -> Fail("Expect to be equivalent:")
 /// ```
 pub fn to_be_equivalent(
   actual: List(a),
@@ -142,7 +142,7 @@ pub fn to_be_equivalent(
 /// // -> Pass
 ///
 /// expect.to_be_some(option.None, "world")
-/// // -> Fail("Expected None to be Some of \"world\".")
+/// // -> Fail("Expected None to be \"world\".")
 /// ```
 pub fn to_be_some(
   actual: option.Option(a),
@@ -188,7 +188,7 @@ pub fn to_be_some(
 /// // -> Pass
 ///
 /// expect.to_be_none(option.Some("hello"))
-/// // -> Fail("Expected \"world\" to be None.")
+/// // -> Fail("Expected \"hello\" to be None.")
 /// ```
 pub fn to_be_none(actual: option.Option(a)) -> garanti.AssertionResult {
   case actual {
@@ -286,7 +286,7 @@ pub fn to_be_ok(actual: Result(a, b)) -> garanti.AssertionResult {
 /// expect.to_be_equal(value, 404)
 /// // -> Pass
 ///
-/// expect.to_be_ok_error(Error(418), fn(n) { expect.to_be_equal(n, 404) })
+/// expect.to_be_error_then(Error(418), fn(n) { expect.to_be_equal(n, 404) })
 /// // -> Fail("Expected 418 to equal 404.")
 /// ```
 pub fn to_be_error_then(
@@ -338,8 +338,8 @@ pub fn to_be_error(actual: Result(a, b)) -> garanti.AssertionResult {
 /// expect.to_be_empty([])
 /// // -> Pass
 ///
-/// expect.to_be_error([1, 2, 3])
-/// // -> Fail("Expected list to be empty but was [1, 2, 3]")
+/// expect.to_be_empty([1, 2, 3])
+/// // -> Fail("Expected list to be empty:")
 /// ```
 pub fn to_be_empty(actual: List(a)) -> garanti.AssertionResult {
   case actual {
