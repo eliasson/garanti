@@ -503,7 +503,10 @@ pub fn to_be_less_or_equal(
           <> string.inspect(actual)
           <> " to be less than or equal to "
           <> string.inspect(expected),
-        [],
+        [
+          garanti.Actual(string.inspect(actual)),
+          // What to add as "expected"? New ExpectLessThan is pretty specific...
+        ],
       )
     _ -> garanti.Pass
   }

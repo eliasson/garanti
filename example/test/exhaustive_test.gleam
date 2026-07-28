@@ -144,3 +144,12 @@ pub fn to_be_less_suite() -> Suite {
     }),
   ])
 }
+
+pub fn to_be_less_or_equal_suite() -> Suite {
+  Suite("to_be_less", [
+    Test("should pass", fn() { expect.to_be_less_or_equal(3, 22, int.compare) }),
+    Test("should fail due to not less or equal than", fn() {
+      expect.to_be_less_or_equal(22, 3, int.compare)
+    }),
+  ])
+}

@@ -51,7 +51,9 @@ pub fn to_be_less_or_equal_suite() {
     Test("it should fail when actual value is greater", fn() {
       expect.to_be_less_or_equal(3, 1, int.compare)
       |> expect.to_be_equal(
-        garanti.Fail("Expected 3 to be less than or equal to 1", []),
+        garanti.Fail("Expected 3 to be less than or equal to 1", [
+          garanti.Actual("3"),
+        ]),
       )
     }),
   ])
