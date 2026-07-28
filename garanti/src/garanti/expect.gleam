@@ -439,7 +439,10 @@ pub fn to_be_greater_or_equal(
           <> string.inspect(actual)
           <> " to be greater or equal to "
           <> string.inspect(expected),
-        [],
+        [
+          garanti.Actual(string.inspect(actual)),
+          // What to add as "expected"? New ExpectGreaterThan is pretty specific...
+        ],
       )
     _ -> garanti.Pass
   }

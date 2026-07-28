@@ -110,7 +110,7 @@ pub fn to_be_empty_suite() -> Suite {
 pub fn to_contain_suite() -> Suite {
   Suite("to_contain", [
     Test("should pass", fn() { expect.to_contain([1, 2, 3], 2) }),
-    Test("should fail due to not empty", fn() {
+    Test("should fail due to not containing", fn() {
       expect.to_contain([1, 2, 3], 4)
     }),
   ])
@@ -119,8 +119,19 @@ pub fn to_contain_suite() -> Suite {
 pub fn to_be_greater_suite() -> Suite {
   Suite("to_be_greater", [
     Test("should pass", fn() { expect.to_be_greater(3, 2, int.compare) }),
-    Test("should fail due to not empty", fn() {
+    Test("should fail due to not greater than", fn() {
       expect.to_be_greater(2, 3, int.compare)
+    }),
+  ])
+}
+
+pub fn to_be_greater_or_equal_suite() -> Suite {
+  Suite("to_be_greater_or_equal", [
+    Test("should pass", fn() {
+      expect.to_be_greater_or_equal(3, 3, int.compare)
+    }),
+    Test("should fail due to not greater than or equal toy", fn() {
+      expect.to_be_greater_or_equal(2, 3, int.compare)
     }),
   ])
 }
