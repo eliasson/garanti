@@ -98,3 +98,10 @@ pub fn to_be_error_suite() -> Suite {
     }),
   ])
 }
+
+pub fn to_be_empty_suite() -> Suite {
+  Suite("to_be_empty", [
+    Test("should pass", fn() { expect.to_be_empty([]) }),
+    Test("should fail due to not empty", fn() { expect.to_be_empty([1]) }),
+  ])
+}

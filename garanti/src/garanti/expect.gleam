@@ -337,11 +337,10 @@ pub fn to_be_empty(actual: List(a)) -> garanti.AssertionResult {
   case actual {
     [] -> garanti.Pass
     _ -> {
-      garanti.Fail(
-        "Expected list to be empty but was "
-          <> list_ext.describe(actual, describe_list_limit),
-        [],
-      )
+      garanti.Fail("Expected list to be empty:", [
+        garanti.Actual(list_ext.describe(actual, describe_list_limit)),
+        garanti.Expected("[]"),
+      ])
     }
   }
 }
