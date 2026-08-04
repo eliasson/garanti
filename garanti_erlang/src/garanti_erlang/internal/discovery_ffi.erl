@@ -69,7 +69,19 @@ module_exports(ModuleBin) ->
 % Both arguments arrive as Gleam strings (binaries) and must be converted to atoms
 % before use in an Erlang apply expression.
 % The return value is trusted to be a Suite by naming convention — no runtime check.
+% Wrapped in try/catch so a panic while building the suite (e.g. a failed `let assert`
+% in setup code) is reported back as an error instead of crashing the whole test run.
 apply_suite(ModuleBin, FuncBin) ->
     Mod = binary_to_atom(ModuleBin, utf8),
     Func = binary_to_atom(FuncBin, utf8),
-    Mod:Func().
+    try
+        {ok, Mod:Func()}
+    catch
+        Class:Reason:Stacktrace ->
+            {error, describe(Class, Reason, Stacktrace)}
+    end.
+
+% Formats a caught exception into a human readable binary, reusing the same
+% formatting the shell/error logger would produce for an uncaught crash.
+describe(Class, Reason, Stacktrace) ->
+    iolist_to_binary(erl_error:format_exception(Class, Reason, Stacktrace)).

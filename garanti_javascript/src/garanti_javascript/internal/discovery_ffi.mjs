@@ -1,4 +1,5 @@
 import { toList } from "../../gleam.mjs";
+import { Suite, Test, Fail } from "../../../garanti/garanti.mjs";
 
 //
 // This FFI code is inspired by the way the official gleeunit performs its test discovery:
@@ -29,20 +30,26 @@ export async function discover_all_suites() {
       const candidate = module[exportName];
       if (typeof candidate !== "function" || candidate.length !== 0) continue;
 
-      try {
-        // This will execute the _suite function, just like in the Erlang discovery.
-        // The tests are not executed, but any test-setup made in the Suite function is.
-        suites.push(candidate());
-      } catch (error) {
-        console.error(
-          `Failed to load suite "${exportName}" from "${jsPath}":`,
-          error,
-        );
-      }
+      // Attemtp to execute the suite (not the tests).
+      suites.push(attempt_suite(candidate, `${jsPath}.${exportName}`));
     }
   }
 
   return toList(suites);
+}
+
+// Try to execute the suite, if that fails during setup / discovery catch it and return
+// an on-the-fly generated suite with that failure.
+export function attempt_suite(candidate, label) {
+  try {
+    return candidate();
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    return new Suite(
+      label,
+      toList([new Test(label, () => new Fail(reason, toList([])))]),
+    );
+  }
 }
 
 /** Read the name of the package that consumes the garanti library. */

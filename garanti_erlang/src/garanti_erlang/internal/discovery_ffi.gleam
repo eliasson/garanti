@@ -11,4 +11,7 @@ pub fn loaded_test_modules() -> List(String)
 pub fn module_exports(module_name: String) -> List(Export)
 
 @external(erlang, "discovery_ffi", "apply_suite")
-pub fn apply_suite(module_name: String, function_name: String) -> Suite
+pub fn apply_suite(
+  module_name: String,
+  function_name: String,
+) -> Result(Suite, String)

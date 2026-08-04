@@ -1,6 +1,7 @@
 import garanti.{Suite, Test}
 import garanti/expect
 import garanti/shared/analysis
+import garanti_erlang/internal/discovery
 import garanti_erlang/support/tests
 import gleam/list
 import gleam/string
@@ -62,6 +63,36 @@ pub fn when_analysing_suites_suite() {
         analysis.EmptySuite("Alpha"),
         analysis.EmptySuite("Bravo"),
       ])
+    }),
+  ])
+}
+
+pub fn when_suite_setup_panics_suite() {
+  // A bit meta, but this will discover a suite fixture that is setup to fail.
+  let suites =
+    discovery.discover_suites_in_module(
+      "garanti_erlang@support@panicking_fixture",
+    )
+
+  Suite("When a suite panics during setup", [
+    Test("it should have a single failing test in the suite", fn() {
+      let assert [suite] = suites
+      let assert [test_case] = suite.tests
+
+      case test_case.run() {
+        garanti.Fail(reason, []) -> {
+          let correct = string.contains(reason, "setup was setup to fail!")
+          case correct {
+            True -> garanti.Pass
+            False ->
+              garanti.Fail(
+                "Expected test case to fail with expected reason",
+                [],
+              )
+          }
+        }
+        _ -> garanti.Fail("Expected test case to fail", [])
+      }
     }),
   ])
 }
