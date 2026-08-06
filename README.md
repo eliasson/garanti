@@ -192,3 +192,7 @@ However, I am a pragmatic person and there are some areas in which an agent are 
 ## Contributors
 
 Initially I want to implement this project myself, then I might open up for contributors. If you are interested drop me an email (markus.eliasson@proton.me) and we will take it from there. Please do not just open a pull requests with out us discussing first.
+
+## Attributions
+
+The official test framwork, [`gleeunit`](https://gleeunit.hexdocs.pm), has been studied to understand how test code is discovered. Garanti use a very similar solution thanks to that!
