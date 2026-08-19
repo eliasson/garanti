@@ -30,7 +30,12 @@ pub type Expectation {
 /// The top level structure for any tests is a suite. All tests must belong to ONE suite,
 /// there are no free-form tests.
 pub type Suite {
+  /// A standard test suite containing tests.
   Suite(name: String, tests: List(Test))
+
+  /// A focused test suite. These take preceedence in the runner. When there are focused suites
+  /// only the focused suites are run.
+  FocusedSuite(name: String, tests: List(Test))
 }
 
 pub type Test {

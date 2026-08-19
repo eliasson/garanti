@@ -1,6 +1,7 @@
 import garanti
 import garanti/shared/analysis
 import garanti/shared/console
+import garanti/shared/focus
 import garanti/shared/report
 import garanti_javascript/internal/discovery
 import garanti_javascript/internal/reporter
@@ -15,7 +16,8 @@ pub fn run(level: garanti.LogLevel) -> Promise(Nil) {
 
   // Discovery is async in JS so we have to map the promise of suites.
   // everything below this point will be synchronous though.
-  use suites <- promise.map(discovery.discover_all_suites())
+  use discovered <- promise.map(discovery.discover_all_suites())
+  let suites = focus.filter_focused(discovered)
 
   print(
     report.Message(report.Info, [
@@ -51,5 +53,20 @@ pub fn run(level: garanti.LogLevel) -> Promise(Nil) {
       |> reporter.report(output, _)
       Nil
     }
+  }
+
+  case focus.is_focused_run(suites) {
+    True -> {
+      print(
+        report.Message(report.Warning, [
+          report.Enriched("Focused mode is active!", [
+            report.Important,
+            report.Bold,
+          ]),
+        ]),
+      )
+      Nil
+    }
+    False -> Nil
   }
 }
