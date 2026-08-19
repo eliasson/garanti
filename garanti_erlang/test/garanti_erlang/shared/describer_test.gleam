@@ -115,3 +115,64 @@ pub fn describer_suite() {
     }),
   ])
 }
+
+pub fn describe_nested_failure_suite() {
+  let result =
+    describer.suite_results("TestSuite", [
+      garanti.TestResult(
+        "Nested Test",
+        garanti.Fail("Outer", [
+          garanti.NestedTestFailure("inner A", []),
+          garanti.NestedTestFailure("inner B", [
+            garanti.Actual("foo"),
+            garanti.Expected("bar"),
+          ]),
+        ]),
+      ),
+    ])
+
+  Suite("When describing a nested test result", [
+    Test("it should include both failures", fn() {
+      use tail <- expect.to_be_ok_then(list.rest(result))
+
+      tail
+      |> expect.to_be_equal([
+        Message(report.Error, [
+          report.Indent,
+          report.Enriched("Test", [report.Secondary]),
+          report.Enriched("Nested Test", [report.Name]),
+          report.Enriched("failed with:", [report.Negative, report.Bold]),
+          report.NewLine,
+          report.Indent,
+          report.Indent,
+          report.Enriched("Outer", [report.Name]),
+          report.NewLine,
+          report.Indent,
+          report.Indent,
+          report.Indent,
+          report.Enriched("inner A", [report.Bold]),
+          report.NewLine,
+          report.Indent,
+          report.Indent,
+          report.Indent,
+          report.Enriched("inner B", [report.Bold]),
+          report.NewLine,
+          report.Indent,
+          report.Indent,
+          report.Indent,
+          report.Indent,
+          report.Enriched("Actual: ", [report.Bold]),
+          report.Enriched("foo", [report.Negative, report.Bold]),
+          report.NewLine,
+          report.Indent,
+          report.Indent,
+          report.Indent,
+          report.Indent,
+          report.Enriched("Expected: ", [report.Bold]),
+          report.Enriched("bar", [report.Positive, report.Bold]),
+          report.NewLine,
+        ]),
+      ])
+    }),
+  ])
+}

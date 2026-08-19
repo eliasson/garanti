@@ -73,7 +73,7 @@ fn failed_test(
   // Describe all expectations (one per line).
   let exp =
     expectations
-    |> list.map(describe)
+    |> list.map(fn(e) { describe(0, e) })
     |> list.flatten
     |> list.append([report.NewLine])
 
@@ -86,53 +86,63 @@ fn failed_test(
   ]
 }
 
-fn describe(expectation: garanti.Expectation) -> List(report.Token) {
+fn describe(
+  level: Int,
+  expectation: garanti.Expectation,
+) -> List(report.Token) {
+  // The number of identations is 2 for level 0.
+  // Which is the normal suite -> test -> expectation
+  let start = [
+    report.NewLine,
+    report.Indent,
+    report.Indent,
+    ..list.repeat(report.Indent, level)
+  ]
+
   // Produce one indented line per expectation
-  case expectation {
+  let rest = case expectation {
     garanti.Actual(a) -> [
-      report.NewLine,
-      report.Indent,
-      report.Indent,
       report.Enriched("Actual: ", [report.Bold]),
       report.Enriched(a, [report.Negative, report.Bold]),
     ]
+
     garanti.Expected(e) -> [
-      report.NewLine,
-      report.Indent,
-      report.Indent,
       report.Enriched("Expected: ", [report.Bold]),
       report.Enriched(e, [report.Positive, report.Bold]),
     ]
 
     garanti.NotExpected(v) -> [
-      report.NewLine,
-      report.Indent,
-      report.Indent,
       report.Enriched("NOT expected: ", [report.Bold]),
       report.Enriched(v, [report.Negative, report.Bold]),
     ]
 
     garanti.Missing(v) -> [
-      report.NewLine,
-      report.Indent,
-      report.Indent,
       report.Enriched("Missing: ", [report.Bold]),
       report.Enriched(v, [report.Negative, report.Bold]),
     ]
 
     garanti.Extra(v) -> [
-      report.NewLine,
-      report.Indent,
-      report.Indent,
       report.Enriched("Extra: ", [report.Bold]),
       report.Enriched(v, [report.Negative, report.Bold]),
     ]
 
     garanti.NestedTestFailure(nested_summary, nested_expectations) -> {
-      //
-      []
+      list.append(
+        // The acting header for the combined failure repeating the matcher summary.
+        [
+          report.Indent,
+          report.Enriched(nested_summary, [report.Bold]),
+        ],
+        // Recurse to describe the nexted expectations with 2 added levels (one for the test summary
+        // and one for the nested test summary).
+        list.flat_map(nested_expectations, fn(e) { describe(level + 2, e) }),
+      )
     }
   }
+
+  // Now, return the entire result
+  start
+  |> list.append(rest)
 }
 
 fn successful_test(name: String) -> List(report.Message) {
