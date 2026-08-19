@@ -160,7 +160,11 @@ pub fn all_suite() -> Suite {
       expect.all([expect.to_be_equal(1, 1), expect.to_be_equal(2, 2)])
     }),
     Test("should fail", fn() {
-      expect.all([expect.to_be_equal(1, 1), expect.to_be_equal(1, 2)])
+      expect.all([
+        expect.to_be_equal(1, 1),
+        expect.to_be_equal(1, 2),
+        expect.to_be_empty(["A"]),
+      ])
     }),
   ])
 }
