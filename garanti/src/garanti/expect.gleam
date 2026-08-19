@@ -21,6 +21,29 @@ import gleam/string
 /// The max number of elements to describe when a list comparision failed.
 const describe_list_limit = 10
 
+/// Combine multiple asserts into one result.
+///
+/// Useful for combining multiple related asserts. All asserts are executed.
+///
+/// - If all passed results are passing, a passing result is returned.
+/// - If any passed results are failing, only the failing results are returned.
+/// - If the list only contain one result, that result is returned.
+///
+/// ## Examples
+///
+/// ```gleam
+/// expect.all([expect.to_be_equal(1, 1), expect.to_be_equal(2, 2)])
+/// // -> Pass
+///
+/// expect.all([
+///  expect.to_be_equal(1, 1),
+///  expect.to_be_equal(1, 2),
+/// ])
+/// // -> Fail("A combined test failed:", [
+/// //  NestedTestFailure("Expected 1 to equal 2", [...])
+/// // ])
+/// ```
+/// a pass is retured. I
 pub fn all(results: List(garanti.AssertionResult)) -> garanti.AssertionResult {
   let results_to_expectaions = fn(input: List(garanti.AssertionResult)) {
     list.flat_map(input, fn(r) {
