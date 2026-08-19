@@ -1,7 +1,10 @@
+import example
 import garanti.{type Suite, Suite, Test}
 import garanti/expect
+import garanti/table
 import gleam/int
 import gleam/option
+import gleam/string
 
 // The goal is to have this example exhaustive on both passing and failing tests for
 // each matcher.
@@ -167,4 +170,34 @@ pub fn all_suite() -> Suite {
       ])
     }),
   ])
+}
+
+type TestData {
+  TestData(a: Int, b: Int, expected: Int)
+}
+
+pub fn named_table_driven_suite() -> Suite {
+  Suite(
+    "table driven",
+    table.table(
+      [
+        TestData(1, 0, 1),
+        TestData(2, 2, 4),
+        TestData(3, 1, 4),
+        TestData(9, 1, 11),
+        TestData(4, -4, 0),
+      ],
+      fn(td: TestData) {
+        "Adding "
+        <> string.inspect(td.a)
+        <> " with "
+        <> string.inspect(td.b)
+        <> " should equal "
+        <> string.inspect(td.expected)
+      },
+      fn(td: TestData) {
+        expect.to_be_equal(example.add(td.a, td.b), td.expected)
+      },
+    ),
+  )
 }
