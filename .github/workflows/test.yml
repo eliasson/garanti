@@ -12,14 +12,14 @@ jobs:
     name: "Shared code"
     runs-on: ubuntu-latest
     defaults:
-        run:
-          working-directory: ./garanti
+      run:
+        working-directory: ./garanti
     steps:
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
           otp-version: "28"
-          gleam-version: "1.14.0"
+          gleam-version: "1.18.0"
           rebar3-version: "3"
       - run: gleam deps download
       - run: gleam build
@@ -28,14 +28,14 @@ jobs:
     name: "Erlang runner"
     runs-on: ubuntu-latest
     defaults:
-        run:
-          working-directory: ./garanti_erlang
+      run:
+        working-directory: ./garanti_erlang
     steps:
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
           otp-version: "28"
-          gleam-version: "1.14.0"
+          gleam-version: "1.18.0"
           rebar3-version: "3"
       - run: gleam deps download
       - run: gleam test
@@ -44,14 +44,14 @@ jobs:
     name: "JavaScript runner"
     runs-on: ubuntu-latest
     defaults:
-        run:
-          working-directory: ./garanti_javascript
+      run:
+        working-directory: ./garanti_javascript
     steps:
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
           otp-version: "28"
-          gleam-version: "1.14.0"
+          gleam-version: "1.18.0"
           rebar3-version: "3"
       - run: gleam deps download
       - run: gleam test
