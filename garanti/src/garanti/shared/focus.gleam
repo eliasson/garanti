@@ -11,6 +11,11 @@ pub fn filter_focused(suites: List(Suite)) -> List(Suite) {
   }
 }
 
+/// Whether the given suites contains at least one focused suite.
+pub fn is_focused_run(suites: List(Suite)) -> Bool {
+  list.any(suites, is_focused)
+}
+
 fn is_focused(suite: Suite) -> Bool {
   case suite {
     FocusedSuite(..) -> True

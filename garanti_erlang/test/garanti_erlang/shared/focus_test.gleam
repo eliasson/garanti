@@ -52,6 +52,28 @@ pub fn filtering_focused_suites_suite() {
   ])
 }
 
+pub fn detecting_a_focused_run_suite() {
+  Suite("Detecting a focused run", [
+    Test("it should be false when no suites are focused", fn() {
+      [
+        Suite("Alpha", []),
+        Suite("Bravo", []),
+      ]
+      |> focus.is_focused_run()
+      |> expect.to_be_equal(False)
+    }),
+
+    Test("it should be true when a suite is focused", fn() {
+      [
+        Suite("Alpha", []),
+        FocusedSuite("Bravo", []),
+      ]
+      |> focus.is_focused_run()
+      |> expect.to_be_equal(True)
+    }),
+  ])
+}
+
 fn suite_names(suites: List(garanti.Suite)) -> List(String) {
   list.map(suites, fn(s) { s.name })
 }

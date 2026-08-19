@@ -56,6 +56,21 @@ pub fn run(level: garanti.LogLevel) -> Nil {
       Nil
     }
   }
+
+  case focus.is_focused_run(suites) {
+    True -> {
+      print(
+        report.Message(report.Warning, [
+          report.Enriched("Focused mode is active!", [
+            report.Important,
+            report.Bold,
+          ]),
+        ]),
+      )
+      Nil
+    }
+    False -> Nil
+  }
 }
 
 fn run_tests(
