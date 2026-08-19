@@ -127,6 +127,11 @@ fn describe(expectation: garanti.Expectation) -> List(report.Token) {
       report.Enriched("Extra: ", [report.Bold]),
       report.Enriched(v, [report.Negative, report.Bold]),
     ]
+
+    garanti.NestedTestFailure(nested_summary, nested_expectations) -> {
+      //
+      []
+    }
   }
 }
 

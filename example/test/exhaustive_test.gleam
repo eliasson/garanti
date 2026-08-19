@@ -153,3 +153,14 @@ pub fn to_be_less_or_equal_suite() -> Suite {
     }),
   ])
 }
+
+pub fn all_suite() -> Suite {
+  Suite("all", [
+    Test("should pass", fn() {
+      expect.all([expect.to_be_equal(1, 1), expect.to_be_equal(2, 2)])
+    }),
+    Test("should fail", fn() {
+      expect.all([expect.to_be_equal(1, 1), expect.to_be_equal(1, 2)])
+    }),
+  ])
+}

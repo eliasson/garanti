@@ -22,6 +22,8 @@ pub type Expectation {
   Missing(String)
   /// When something is extra for (not expected to be part of) an expected volume.
   Extra(String)
+  /// When using combined matchers nesting tests, this contains the details of one such nested tests.
+  NestedTestFailure(summary: String, expectations: List(Expectation))
 }
 
 /// Test did not finish executing within the maximum allowed time slot.
