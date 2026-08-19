@@ -1,6 +1,7 @@
 import garanti
 import garanti/shared/analysis
 import garanti/shared/console
+import garanti/shared/focus
 import garanti/shared/report
 import garanti_erlang/internal/console_reporter
 import garanti_erlang/internal/discovery
@@ -18,7 +19,9 @@ pub fn run(level: garanti.LogLevel) -> Nil {
   let output = console.Output(level)
   let print = fn(m: report.Message) { console.print(output, m) }
 
-  let suites = discovery.discover_all_suites()
+  let suites =
+    discovery.discover_all_suites()
+    |> focus.filter_focused()
 
   print(
     report.Message(report.Info, [
