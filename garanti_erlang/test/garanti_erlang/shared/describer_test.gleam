@@ -1,7 +1,7 @@
 import garanti.{Suite, Test}
 import garanti/expect
 import garanti/shared/describer
-import garanti/shared/report.{Enriched, Indent, Info, Message}
+import garanti/shared/report.{Enriched, Error, Indent, Info, Message, NewLine}
 import gleam/list
 
 pub fn run_summary_suite() {
@@ -171,6 +171,86 @@ pub fn describe_nested_failure_suite() {
           report.Enriched("Expected: ", [report.Bold]),
           report.Enriched("bar", [report.Positive, report.Bold]),
           report.NewLine,
+        ]),
+      ])
+    }),
+  ])
+}
+
+pub fn failures_summary_suite() {
+  Suite("When describing the failures summary", [
+    Test("it should be empty when there are no failures", fn() {
+      describer.failures_summary([])
+      |> expect.to_be_empty
+    }),
+
+    Test("it should not include passing tests", fn() {
+      describer.failures_summary([
+        #("TestSuite", garanti.TestResult("test 1", garanti.Pass)),
+      ])
+      |> expect.to_be_empty
+    }),
+
+    Test("it should start with a header when there are failures", fn() {
+      use head <- expect.to_be_ok_then(
+        list.first(
+          describer.failures_summary([
+            #(
+              "TestSuite",
+              garanti.TestResult("test 1", garanti.Fail("Oh no!", [])),
+            ),
+          ]),
+        ),
+      )
+
+      head
+      |> expect.to_be_equal(
+        Message(Error, [
+          NewLine,
+          Enriched("Failures:", [report.Negative, report.Bold]),
+        ]),
+      )
+    }),
+
+    Test("it should list each failure with its suite name", fn() {
+      use tail <- expect.to_be_ok_then(
+        list.rest(
+          describer.failures_summary([
+            #(
+              "Suite A",
+              garanti.TestResult("test 1", garanti.Fail("Oh no!", [])),
+            ),
+            #("Suite B", garanti.TestResult("test 2", garanti.Timeout)),
+          ]),
+        ),
+      )
+
+      tail
+      |> expect.to_be_equal([
+        Message(Error, [
+          Indent,
+          Enriched("Suite", [report.Secondary]),
+          Enriched("Suite A", [report.Name]),
+          NewLine,
+          Indent,
+          Indent,
+          Enriched("Test", [report.Secondary]),
+          Enriched("test 1", [report.Name]),
+          Enriched("failed with:", [report.Negative, report.Bold]),
+          NewLine,
+          Indent,
+          Indent,
+          Indent,
+          Enriched("Oh no!", [report.Name]),
+          NewLine,
+        ]),
+        Message(Info, [
+          Indent,
+          Enriched("Suite", [report.Secondary]),
+          Enriched("Suite B", [report.Name]),
+          Enriched("Test", [report.Secondary]),
+          Enriched("test 2", [report.Name]),
+          Enriched("timed out", [report.Negative, report.Bold]),
         ]),
       ])
     }),

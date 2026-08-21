@@ -17,13 +17,18 @@ pub fn start(
   out: console.Output,
   number_suites: Int,
 ) -> Result(actor.Started(Subject(garanti.SuiteResult)), actor.StartError) {
-  actor.new(State(number_suites, 0, 0))
+  actor.new(State(number_suites, 0, 0, []))
   |> actor.on_message(fn(s, m) { handle_message(out, s, m, done_sub) })
   |> actor.start()
 }
 
 type State {
-  State(number_suites: Int, total_tests: Int, total_failures: Int)
+  State(
+    number_suites: Int,
+    total_tests: Int,
+    total_failures: Int,
+    failures: List(#(String, garanti.TestResult)),
+  )
 }
 
 fn handle_message(
@@ -35,13 +40,6 @@ fn handle_message(
   case msg {
     garanti.SuiteComplete(suite_name:, results:) -> {
       let suite_tests = list.length(results)
-      let suite_failures =
-        list.count(results, fn(tr) {
-          case tr {
-            garanti.TestResult(_, garanti.Pass) -> False
-            _ -> True
-          }
-        })
 
       case describer.suite_results(suite_name, results) {
         [] -> {
@@ -63,10 +61,18 @@ fn handle_message(
         }
       }
 
+      // Collect the failing tests so these can be reported again.
+      let suite_failing_results = failing_tests(results)
+      let suite_failures = list.length(suite_failing_results)
+
       State(
         state.number_suites - 1,
         state.total_tests + suite_tests,
         state.total_failures + suite_failures,
+        list.append(
+          state.failures,
+          list.map(suite_failing_results, fn(tr) { #(suite_name, tr) }),
+        ),
       )
       |> are_we_done_yet(out, done_sub)
     }
@@ -81,7 +87,12 @@ fn handle_message(
         ]),
       )
 
-      State(state.number_suites - 1, state.total_tests, state.total_failures)
+      State(
+        state.number_suites - 1,
+        state.total_tests,
+        state.total_failures,
+        state.failures,
+      )
       |> are_we_done_yet(out, done_sub)
     }
   }
@@ -94,6 +105,9 @@ fn are_we_done_yet(
 ) {
   case new_state.number_suites {
     0 -> {
+      list.each(describer.failures_summary(new_state.failures), fn(message) {
+        print(out, message)
+      })
       print(
         out,
         describer.run_summary(new_state.total_tests, new_state.total_failures),
@@ -105,4 +119,15 @@ fn are_we_done_yet(
 
     _ -> actor.continue(new_state)
   }
+}
+
+fn failing_tests(
+  results: List(garanti.TestResult),
+) -> List(garanti.TestResult) {
+  list.filter(results, fn(tr) {
+    case tr {
+      garanti.TestResult(_, garanti.Pass) -> False
+      _ -> True
+    }
+  })
 }
