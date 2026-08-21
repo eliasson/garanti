@@ -157,6 +157,83 @@ fn successful_test(name: String) -> List(report.Message) {
   ]
 }
 
+/// Summarize the failing tests by listing the suite, test and failures. No passing tests
+/// is included in the summary.
+pub fn failures_summary(
+  failures: List(#(String, garanti.TestResult)),
+) -> List(report.Message) {
+  let items =
+    list.flat_map(failures, fn(item) {
+      let #(suite_name, tr) = item
+      case tr {
+        garanti.TestResult(name:, result: garanti.Fail(summary, expectations)) ->
+          failed_test_recap(suite_name, name, summary, expectations)
+        garanti.TestResult(name:, result: garanti.Timeout) ->
+          timeout_test_recap(suite_name, name)
+        garanti.TestResult(_, garanti.Pass) -> []
+      }
+    })
+
+  case items {
+    [] -> []
+    _ -> [
+      report.Message(report.Error, [
+        report.NewLine,
+        report.Enriched("Failures:", [report.Negative, report.Bold]),
+      ]),
+      ..items
+    ]
+  }
+}
+
+fn failed_test_recap(
+  suite_name: String,
+  name: String,
+  summary: String,
+  expectations: List(garanti.Expectation),
+) -> List(report.Message) {
+  let message = [
+    report.Indent,
+    report.Enriched("Suite", [report.Secondary]),
+    report.Enriched(suite_name, [report.Name]),
+    report.NewLine,
+    report.Indent,
+    report.Indent,
+    report.Enriched("Test", [report.Secondary]),
+    report.Enriched(name, [report.Name]),
+    report.Enriched("failed with:", [report.Negative, report.Bold]),
+    report.NewLine,
+    report.Indent,
+    report.Indent,
+    report.Indent,
+    report.Enriched(summary, [report.Name]),
+  ]
+
+  let exp =
+    expectations
+    |> list.map(fn(e) { describe(2, e) })
+    |> list.flatten
+    |> list.append([report.NewLine])
+
+  [report.Message(report.Error, list.append(message, exp))]
+}
+
+fn timeout_test_recap(
+  suite_name: String,
+  name: String,
+) -> List(report.Message) {
+  [
+    report.Message(report.Info, [
+      report.Indent,
+      report.Enriched("Suite", [report.Secondary]),
+      report.Enriched(suite_name, [report.Name]),
+      report.Enriched("Test", [report.Secondary]),
+      report.Enriched(name, [report.Name]),
+      report.Enriched("timed out", [report.Negative, report.Bold]),
+    ]),
+  ]
+}
+
 pub fn run_summary(total_tests: Int, total_failures: Int) -> report.Message {
   case total_failures {
     0 ->
