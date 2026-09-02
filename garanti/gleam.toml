@@ -1,6 +1,6 @@
 name = "garanti"
 version = "0.1.0"
-description = "Garanti is a Gleam test framework built around suites, parallel execution, and readable failure messages."
+description = "Garanti is a Gleam test framework built around suites, tests and readable failure messages."
 licences = ["Apache-2.0"]
 
 [repository]
