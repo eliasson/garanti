@@ -1,5 +1,8 @@
 # Garanti
 
+[![Package Version](https://img.shields.io/hexpm/v/garanti)](https://hex.pm/packages/garanti)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/garanti)
+
 Garanti is a Gleam test framework built around suites, tests and readable failure messages.
 
 ```gleam
