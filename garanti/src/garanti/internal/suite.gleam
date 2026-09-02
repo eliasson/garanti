@@ -1,5 +1,5 @@
 import garanti
-import garanti_javascript/internal/executor
+import garanti/internal/executor
 import gleam/list
 
 /// Executes all tests in the given suite and returns the result.

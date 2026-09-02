@@ -1,22 +1,43 @@
 import garanti
+import garanti/discovery
+import garanti/internal/reporter
+import garanti/internal/suite
 import garanti/shared/analysis
 import garanti/shared/console
 import garanti/shared/focus
 import garanti/shared/report
-import garanti_javascript/internal/discovery
-import garanti_javascript/internal/reporter
-import garanti_javascript/internal/suite
 import gleam/int
-import gleam/javascript/promise.{type Promise}
 import gleam/list
 
+@target(javascript)
+import gleam/javascript/promise.{type Promise}
+
+@target(erlang)
+/// Start a test run.
+/// - Discovery phase that identifies all available test suites.
+/// - Run each suite's tests.
+/// - Report progress and test result.
+pub fn run(level: garanti.LogLevel) -> Nil {
+  let output = console.Output(level)
+  run_with_discovered(output, discovery.discover_all_suites())
+}
+
+@target(javascript)
 pub fn run(level: garanti.LogLevel) -> Promise(Nil) {
   let output = console.Output(level)
-  let print = fn(m: report.Message) { console.print(output, m) }
 
   // Discovery is async in JS so we have to map the promise of suites.
   // everything below this point will be synchronous though.
   use discovered <- promise.map(discovery.discover_all_suites())
+  run_with_discovered(output, discovered)
+}
+
+fn run_with_discovered(
+  output: console.Output,
+  discovered: List(garanti.Suite),
+) -> Nil {
+  let print = fn(m: report.Message) { console.print(output, m) }
+
   let suites = focus.filter_focused(discovered)
 
   print(

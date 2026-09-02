@@ -1,10 +1,10 @@
 import garanti
+import garanti/discovery
 import garanti/shared/analysis
 import garanti/shared/console
 import garanti/shared/focus
 import garanti/shared/report
 import garanti_erlang/internal/console_reporter
-import garanti_erlang/internal/discovery
 import garanti_erlang/internal/suite
 import gleam/erlang/process
 import gleam/int
