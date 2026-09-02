@@ -234,6 +234,68 @@ fn timeout_test_recap(
   ]
 }
 
+/// Get the messages to report for the given suite result as well as an updated accumulator
+/// that tracks the total number of tests and failures.
+pub fn suite_result_report(
+  acc: #(Int, Int, List(#(String, garanti.TestResult))),
+  suite_result: garanti.SuiteResult,
+) -> #(List(report.Message), #(Int, Int, List(#(String, garanti.TestResult)))) {
+  case suite_result {
+    garanti.SuiteComplete(suite_name:, results:) -> {
+      let suite_tests = list.length(results)
+
+      // An empty suite result shouldn't happen in practice (empty suites are
+      // skipped before running), but is reported rather than silently dropped.
+      let messages = case suite_results(suite_name, results) {
+        [] -> [
+          report.Message(report.Warning, [
+            report.Plain("Suite"),
+            report.Enriched(suite_name, [report.Name, report.Bold]),
+            report.Plain("contained no result!"),
+          ]),
+        ]
+        messages -> messages
+      }
+
+      let suite_failing_results = failing_tests(results)
+      let suite_failures = list.length(suite_failing_results)
+
+      let new_acc = #(
+        acc.0 + suite_tests,
+        acc.1 + suite_failures,
+        list.append(
+          acc.2,
+          list.map(suite_failing_results, fn(tr) { #(suite_name, tr) }),
+        ),
+      )
+
+      #(messages, new_acc)
+    }
+
+    garanti.SuiteCancelled(suite_name) -> {
+      let messages = [
+        report.Message(report.Warning, [
+          report.Plain("Suite"),
+          report.Enriched(suite_name, [report.Name, report.Bold]),
+          report.Plain("was cancelled"),
+        ]),
+      ]
+      #(messages, acc)
+    }
+  }
+}
+
+fn failing_tests(
+  results: List(garanti.TestResult),
+) -> List(garanti.TestResult) {
+  list.filter(results, fn(tr) {
+    case tr {
+      garanti.TestResult(_, garanti.Pass) -> False
+      _ -> True
+    }
+  })
+}
+
 pub fn run_summary(total_tests: Int, total_failures: Int) -> report.Message {
   case total_failures {
     0 ->
