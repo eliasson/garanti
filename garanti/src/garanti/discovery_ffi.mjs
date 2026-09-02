@@ -1,5 +1,5 @@
-import { toList } from "../../gleam.mjs";
-import { Suite, Test, Fail } from "../../../garanti/garanti.mjs";
+import { toList } from "../gleam.mjs";
+import { Suite, Test, Fail } from "../garanti.mjs";
 
 //
 // This FFI code is inspired by the way the official gleeunit performs its test discovery:
@@ -11,7 +11,7 @@ export async function discover_all_suites() {
   const packageName = await readRootPackageName();
 
   // The compiled output of the package consuming Garanti (relative to this file).
-  const distUrl = new URL(`../../../${packageName}/`, import.meta.url);
+  const distUrl = new URL(`../../${packageName}/`, import.meta.url);
 
   // Process all files under test directory to find our suites.
   for await (const gleamPath of gleamFiles("test")) {

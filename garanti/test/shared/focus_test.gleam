@@ -1,8 +1,8 @@
 import garanti.{FocusedSuite, Suite, Test}
 import garanti/expect
 import garanti/shared/focus
-import garanti_erlang/support/tests
 import gleam/list
+import support/tests
 
 pub fn filtering_focused_suites_suite() {
   Suite("Filtering focused suites", [

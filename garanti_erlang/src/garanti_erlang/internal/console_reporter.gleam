@@ -5,7 +5,6 @@
 import garanti
 import garanti/shared/console.{print}
 import garanti/shared/describer
-import garanti/shared/report
 import gleam/erlang/process.{type Subject}
 import gleam/list
 import gleam/otp/actor
@@ -37,65 +36,25 @@ fn handle_message(
   msg: garanti.SuiteResult,
   done_sub: Subject(Nil),
 ) {
-  case msg {
-    garanti.SuiteComplete(suite_name:, results:) -> {
-      let suite_tests = list.length(results)
-
-      case describer.suite_results(suite_name, results) {
-        [] -> {
-          // This should not happen due to emtpy suite (since these are not run), when
-          // will this occur? Timeouts?
-          print(
-            out,
-            report.Message(report.Warning, [
-              report.Plain("Suite"),
-              report.Enriched(suite_name, [report.Name, report.Bold]),
-              report.Plain("contained no result!"),
-            ]),
-          )
-        }
-
-        all -> {
-          list.each(all, fn(message) { print(out, message) })
-          out
-        }
-      }
-
-      // Collect the failing tests so these can be reported again.
-      let suite_failing_results = failing_tests(results)
-      let suite_failures = list.length(suite_failing_results)
-
-      State(
-        state.number_suites - 1,
-        state.total_tests + suite_tests,
-        state.total_failures + suite_failures,
-        list.append(
-          state.failures,
-          list.map(suite_failing_results, fn(tr) { #(suite_name, tr) }),
-        ),
-      )
-      |> are_we_done_yet(out, done_sub)
-    }
-
-    garanti.SuiteCancelled(suite_name) -> {
-      print(
-        out,
-        report.Message(report.Warning, [
-          report.Plain("Suite"),
-          report.Enriched(suite_name, [report.Name, report.Bold]),
-          report.Plain("was cancelled"),
-        ]),
-      )
-
-      State(
-        state.number_suites - 1,
+  let #(messages, totals) =
+    describer.suite_result_report(
+      describer.ReportTotals(
         state.total_tests,
         state.total_failures,
         state.failures,
-      )
-      |> are_we_done_yet(out, done_sub)
-    }
-  }
+      ),
+      msg,
+    )
+
+  list.each(messages, fn(m) { print(out, m) })
+
+  State(
+    state.number_suites - 1,
+    totals.total_tests,
+    totals.total_failures,
+    totals.failures,
+  )
+  |> are_we_done_yet(out, done_sub)
 }
 
 fn are_we_done_yet(
@@ -119,15 +78,4 @@ fn are_we_done_yet(
 
     _ -> actor.continue(new_state)
   }
-}
-
-fn failing_tests(
-  results: List(garanti.TestResult),
-) -> List(garanti.TestResult) {
-  list.filter(results, fn(tr) {
-    case tr {
-      garanti.TestResult(_, garanti.Pass) -> False
-      _ -> True
-    }
-  })
 }

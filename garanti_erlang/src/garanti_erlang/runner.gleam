@@ -1,10 +1,9 @@
 import garanti
-import garanti/shared/analysis
+import garanti/discovery
+import garanti/runner
 import garanti/shared/console
-import garanti/shared/focus
 import garanti/shared/report
 import garanti_erlang/internal/console_reporter
-import garanti_erlang/internal/discovery
 import garanti_erlang/internal/suite
 import gleam/erlang/process
 import gleam/int
@@ -17,67 +16,14 @@ import gleam/list
 /// - Report progress and test result.
 pub fn run(level: garanti.LogLevel) -> Nil {
   let output = console.Output(level)
-  let print = fn(m: report.Message) { console.print(output, m) }
-
-  let suites =
-    discovery.discover_all_suites()
-    |> focus.filter_focused()
-
-  print(
-    report.Message(report.Info, [
-      report.Plain(
-        "Discovered " <> list.length(suites) |> int.to_string <> " suite(s).",
-      ),
-    ]),
-  )
-
-  let messages = analysis.perform_analysis(suites)
-  console.print_all(output, messages)
-
-  // Skip running empty suites
-  let tests_to_run = list.filter(suites, fn(s) { !list.is_empty(s.tests) })
-  let nr_tests_to_run = list.length(tests_to_run)
-
-  case nr_tests_to_run {
-    0 -> {
-      console.print(
-        output,
-        report.Message(report.Error, [
-          report.Enriched("No test suites to run!", [
-            report.Negative,
-            report.Bold,
-          ]),
-        ]),
-      )
-      Nil
-    }
-    _ -> {
-      run_tests(output, suites, nr_tests_to_run)
-      Nil
-    }
-  }
-
-  case focus.is_focused_run(suites) {
-    True -> {
-      print(
-        report.Message(report.Warning, [
-          report.Enriched("Focused mode is active!", [
-            report.Important,
-            report.Bold,
-          ]),
-        ]),
-      )
-      Nil
-    }
-    False -> Nil
-  }
+  runner.run_with_discovered(output, discovery.discover_all_suites(), run_tests)
 }
 
 fn run_tests(
   output: console.Output,
   suites: List(garanti.Suite),
   nr_tests_to_run: Int,
-) {
+) -> Nil {
   let print = fn(m: report.Message) { console.print(output, m) }
 
   // Create a subject to be notified when all suits have run.
