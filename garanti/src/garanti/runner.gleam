@@ -19,7 +19,7 @@ import gleam/javascript/promise.{type Promise}
 /// - Report progress and test result.
 pub fn run(level: garanti.LogLevel) -> Nil {
   let output = console.Output(level)
-  run_with_discovered(output, discovery.discover_all_suites())
+  run_with_discovered(output, discovery.discover_all_suites(), execute_suites)
 }
 
 @target(javascript)
@@ -29,12 +29,27 @@ pub fn run(level: garanti.LogLevel) -> Promise(Nil) {
   // Discovery is async in JS so we have to map the promise of suites.
   // everything below this point will be synchronous though.
   use discovered <- promise.map(discovery.discover_all_suites())
-  run_with_discovered(output, discovered)
+  run_with_discovered(output, discovered, execute_suites)
 }
 
-fn run_with_discovered(
+fn execute_suites(
+  output: console.Output,
+  suites: List(garanti.Suite),
+  _nr_tests_to_run: Int,
+) -> Nil {
+  suites
+  |> list.map(suite.run)
+  |> reporter.report(output, _)
+  Nil
+}
+
+/// Run the discovered suites (delegated to the injected `execute` function).
+///
+/// Analyse, filter (focused), execute.
+pub fn run_with_discovered(
   output: console.Output,
   discovered: List(garanti.Suite),
+  execute: fn(console.Output, List(garanti.Suite), Int) -> Nil,
 ) -> Nil {
   let print = fn(m: report.Message) { console.print(output, m) }
 
@@ -68,12 +83,7 @@ fn run_with_discovered(
       )
       Nil
     }
-    _ -> {
-      suites
-      |> list.map(suite.run)
-      |> reporter.report(output, _)
-      Nil
-    }
+    _ -> execute(output, suites, nr_tests_to_run)
   }
 
   case focus.is_focused_run(suites) {
