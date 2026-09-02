@@ -2,3 +2,10 @@
 *.ez
 build/
 erl_crash.dump
+
+# Copied in by `make sync-docs` for Hex packaging; root README.md/LICENSE
+# are the source of truth.
+/garanti/README.md
+/garanti/LICENSE
+/garanti_erlang/README.md
+/garanti_erlang/LICENSE
