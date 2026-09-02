@@ -36,15 +36,24 @@ fn handle_message(
   msg: garanti.SuiteResult,
   done_sub: Subject(Nil),
 ) {
-  let #(messages, #(total_tests, total_failures, failures)) =
+  let #(messages, totals) =
     describer.suite_result_report(
-      #(state.total_tests, state.total_failures, state.failures),
+      describer.ReportTotals(
+        state.total_tests,
+        state.total_failures,
+        state.failures,
+      ),
       msg,
     )
 
   list.each(messages, fn(m) { print(out, m) })
 
-  State(state.number_suites - 1, total_tests, total_failures, failures)
+  State(
+    state.number_suites - 1,
+    totals.total_tests,
+    totals.total_failures,
+    totals.failures,
+  )
   |> are_we_done_yet(out, done_sub)
 }
 

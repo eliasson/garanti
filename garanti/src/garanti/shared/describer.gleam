@@ -234,12 +234,24 @@ fn timeout_test_recap(
   ]
 }
 
+/// The running totals accumulated while reporting a sequence of suite results.
+pub type ReportTotals {
+  ReportTotals(
+    /// The total number of tests processed (so far).
+    total_tests: Int,
+    /// The total number of failures processed (so far).
+    total_failures: Int,
+    /// All failures colleted (so far).
+    failures: List(#(String, garanti.TestResult)),
+  )
+}
+
 /// Get the messages to report for the given suite result as well as an updated accumulator
 /// that tracks the total number of tests and failures.
 pub fn suite_result_report(
-  acc: #(Int, Int, List(#(String, garanti.TestResult))),
+  acc: ReportTotals,
   suite_result: garanti.SuiteResult,
-) -> #(List(report.Message), #(Int, Int, List(#(String, garanti.TestResult)))) {
+) -> #(List(report.Message), ReportTotals) {
   case suite_result {
     garanti.SuiteComplete(suite_name:, results:) -> {
       let suite_tests = list.length(results)
@@ -260,14 +272,15 @@ pub fn suite_result_report(
       let suite_failing_results = failing_tests(results)
       let suite_failures = list.length(suite_failing_results)
 
-      let new_acc = #(
-        acc.0 + suite_tests,
-        acc.1 + suite_failures,
-        list.append(
-          acc.2,
-          list.map(suite_failing_results, fn(tr) { #(suite_name, tr) }),
-        ),
-      )
+      let new_acc =
+        ReportTotals(
+          total_tests: acc.total_tests + suite_tests,
+          total_failures: acc.total_failures + suite_failures,
+          failures: list.append(
+            acc.failures,
+            list.map(suite_failing_results, fn(tr) { #(suite_name, tr) }),
+          ),
+        )
 
       #(messages, new_acc)
     }
