@@ -6,6 +6,7 @@ pub type AssertionResult {
   Pass
   /// A failed test with the list of expectations detailing what is not as expected.
   Fail(summary: String, expectations: List(Expectation))
+  /// Test did not finish executing within the maximum allowed time slot.
   Timeout
 }
 
@@ -26,7 +27,6 @@ pub type Expectation {
   NestedTestFailure(summary: String, expectations: List(Expectation))
 }
 
-/// Test did not finish executing within the maximum allowed time slot.
 /// The top level structure for any tests is a suite. All tests must belong to ONE suite,
 /// there are no free-form tests.
 pub type Suite {
