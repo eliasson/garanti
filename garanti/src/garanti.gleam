@@ -25,6 +25,8 @@ pub type Expectation {
   Extra(String)
   /// When using combined matchers nesting tests, this contains the details of one such nested tests.
   NestedTestFailure(summary: String, expectations: List(Expectation))
+  /// A formatted diff string
+  Diff(String)
 }
 
 /// The top level structure for any tests is a suite. All tests must belong to ONE suite,

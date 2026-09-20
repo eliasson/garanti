@@ -1,5 +1,6 @@
 import garanti.{Suite, Test}
 import garanti/expect
+import pretty_diff
 
 pub fn to_be_equal_suite() {
   Suite("When matching to_be_equal", [
@@ -14,21 +15,25 @@ pub fn to_be_equal_suite() {
     }),
 
     Test("it should fail when intergers are NOT equal", fn() {
-      expect.to_be_equal(12, 22)
+      let actual = 12
+      let expected = 22
+
+      expect.to_be_equal(actual, expected)
       |> expect.to_be_equal(
         garanti.Fail("Expected 12 to equal 22.", [
-          garanti.Actual("12"),
-          garanti.Expected("22"),
+          garanti.Diff(pretty_diff.from(actual, expected)),
         ]),
       )
     }),
 
     Test("it should fail when strings are NOT equal", fn() {
-      expect.to_be_equal("abrakadabra", "simsalabim")
+      let actual = "abrakadabra"
+      let expected = "simsalabim"
+
+      expect.to_be_equal(actual, expected)
       |> expect.to_be_equal(
         garanti.Fail("Expected \"abrakadabra\" to equal \"simsalabim\".", [
-          garanti.Actual("\"abrakadabra\""),
-          garanti.Expected("\"simsalabim\""),
+          garanti.Diff(pretty_diff.from(actual, expected)),
         ]),
       )
     }),
