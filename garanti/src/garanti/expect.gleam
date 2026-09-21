@@ -17,6 +17,7 @@ import gleam/list
 import gleam/option
 import gleam/order
 import gleam/string
+import pretty_diff
 
 /// The max number of elements to describe when a list comparision failed.
 const describe_list_limit = 10
@@ -95,8 +96,7 @@ pub fn to_be_equal(actual: a, expected: a) -> garanti.AssertionResult {
           ".",
         ]),
         [
-          garanti.Actual(string.inspect(actual)),
-          garanti.Expected(string.inspect(expected)),
+          garanti.Diff(pretty_diff.from(actual, expected)),
         ],
       )
   }

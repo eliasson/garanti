@@ -101,6 +101,11 @@ fn describe(
 
   // Produce one indented line per expectation
   let rest = case expectation {
+    garanti.Diff(d) -> [
+      report.Enriched("Diff: ", [report.Bold]),
+      report.Enriched(d, [report.Bold]),
+    ]
+
     garanti.Actual(a) -> [
       report.Enriched("Actual: ", [report.Bold]),
       report.Enriched(a, [report.Negative, report.Bold]),
