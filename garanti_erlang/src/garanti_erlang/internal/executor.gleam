@@ -19,8 +19,8 @@ pub type ExecutionResult {
 // - Timeout limit
 
 // Declared here rather than a separate ffi module since it is only used below.
-// Maps to executor_ffi.erl which wraps the call in an Erlang try/catch.
-@external(erlang, "executor_ffi", "run_catching")
+// Maps to garanti_executor_ffi.erl which wraps the call in an Erlang try/catch.
+@external(erlang, "garanti_executor_ffi", "run_catching")
 fn run_catching(
   f: fn() -> garanti.AssertionResult,
 ) -> Result(garanti.AssertionResult, Nil)

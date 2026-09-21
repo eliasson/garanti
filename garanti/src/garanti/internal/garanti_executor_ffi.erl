@@ -1,4 +1,5 @@
--module(executor_ffi).
+-module(garanti_executor_ffi).
+
 -export([run_catching/1]).
 
 % Calls the given test function inside a try/catch so that any exception (e.g. a
@@ -11,5 +12,6 @@ run_catching(TestFn) ->
     try
         {ok, TestFn()}
     catch
-        _:_ -> {error, nil}
+        _:_ ->
+            {error, nil}
     end.

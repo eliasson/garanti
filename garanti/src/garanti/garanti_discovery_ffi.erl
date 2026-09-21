@@ -1,4 +1,4 @@
--module(discovery_ffi).
+-module(garanti_discovery_ffi).
 
 -export([loaded_test_modules/0, module_exports/1, apply_suite/2]).
 
@@ -29,9 +29,9 @@
 loaded_test_modules() ->
     Prefix = test_project_prefix(),
     [begin
-        Atom = list_to_atom(Mod),
-        code:ensure_loaded(Atom),
-        atom_to_binary(Atom, utf8)
+         Atom = list_to_atom(Mod),
+         code:ensure_loaded(Atom),
+         atom_to_binary(Atom, utf8)
      end
      || {Mod, _Path, _Loaded} <- code:all_available(),
         is_test_module(Mod),
@@ -43,12 +43,15 @@ test_project_prefix() ->
     {current_stacktrace, Stack} = process_info(self(), current_stacktrace),
     find_prefix_in_stack(Stack).
 
-find_prefix_in_stack([]) -> "";
+find_prefix_in_stack([]) ->
+    "";
 find_prefix_in_stack([{Mod, main, 0, _} | _]) ->
     ModStr = atom_to_list(Mod),
     case string:split(ModStr, "@", leading) of
-        [Prefix, _] -> Prefix ++ "@";
-        _           -> ""
+        [Prefix, _] ->
+            Prefix ++ "@";
+        _ ->
+            ""
     end;
 find_prefix_in_stack([_ | Rest]) ->
     find_prefix_in_stack(Rest).

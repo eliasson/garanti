@@ -19,15 +19,15 @@ pub type Export {
 }
 
 @target(erlang)
-@external(erlang, "discovery_ffi", "loaded_test_modules")
+@external(erlang, "garanti_discovery_ffi", "loaded_test_modules")
 fn loaded_test_modules() -> List(String)
 
 @target(erlang)
-@external(erlang, "discovery_ffi", "module_exports")
+@external(erlang, "garanti_discovery_ffi", "module_exports")
 fn module_exports(module_name: String) -> List(Export)
 
 @target(erlang)
-@external(erlang, "discovery_ffi", "apply_suite")
+@external(erlang, "garanti_discovery_ffi", "apply_suite")
 fn apply_suite(
   module_name: String,
   function_name: String,
@@ -67,12 +67,12 @@ fn failed_suite(
 }
 
 @target(javascript)
-@external(javascript, "./discovery_ffi.mjs", "discover_all_suites")
+@external(javascript, "./garanti_discovery_ffi.mjs", "discover_all_suites")
 pub fn discover_all_suites() -> Promise(List(Suite))
 
 @target(javascript)
 /// Calls `build` and returns its Suite. If `build` panics (e.g. a failed `let
 /// assert` in setup code that runs before the Suite value is returned), the
 /// panic is caught and a suite with a single failing test is returned instead.
-@external(javascript, "./discovery_ffi.mjs", "attempt_suite")
+@external(javascript, "./garanti_discovery_ffi.mjs", "attempt_suite")
 pub fn attempt_suite(build: fn() -> Suite, label: String) -> Suite

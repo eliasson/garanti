@@ -10,8 +10,8 @@ pub type ExecutionResult {
 
 // Declared here rather than a separate ffi module since it is only used below.
 // Maps to executor_ffi.erl / executor_ffi.mjs which wrap the call in a try/catch.
-@external(erlang, "executor_ffi", "run_catching")
-@external(javascript, "./executor_ffi.mjs", "run_catching")
+@external(erlang, "garanti_executor_ffi", "run_catching")
+@external(javascript, "./garanti_executor_ffi.mjs", "run_catching")
 fn run_catching(
   f: fn() -> garanti.AssertionResult,
 ) -> Result(garanti.AssertionResult, Nil)
