@@ -1,5 +1,5 @@
 name = "garanti"
-version = "0.1.0"
+version = "0.1.1"
 description = "Garanti is a Gleam test framework built around suites, tests and readable failure messages."
 licences = ["Apache-2.0"]
 

@@ -1,5 +1,5 @@
 name = "garanti_erlang"
-version = "0.1.0"
+version = "0.1.1"
 description = "Garanti test-runner for the Erlang target with support of parallelism and isolation."
 licences = ["Apache-2.0"]
 
