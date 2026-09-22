@@ -2,6 +2,10 @@
 
 Notable user-facing changes, newest first.
 
+## Unreleased
+
+- Fixed Garanti test that was broke on JavaScript runtime (#23) - contributed by @mooreryan.
+
 ## [0.1.1] - 2026-09-21
 
 - Show pretty printed diffs for `to_be_equal` matcher - contributed by @mooreryan.
