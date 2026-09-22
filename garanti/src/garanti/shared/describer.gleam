@@ -104,6 +104,10 @@ fn describe(
     garanti.Diff(d) -> [
       report.Enriched("Diff: ", [report.Bold]),
       report.Enriched(d, [report.Bold]),
+      report.Enriched("(", [report.Secondary]),
+      report.Enriched("-Actual", [report.Negative]),
+      report.Enriched("+Expected", [report.Positive]),
+      report.Enriched(")", [report.Secondary]),
     ]
 
     garanti.Actual(a) -> [
