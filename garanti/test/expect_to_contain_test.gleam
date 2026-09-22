@@ -1,5 +1,6 @@
 import garanti.{Suite, Test}
 import garanti/expect
+import gleam/string
 
 type Foo {
   Foo(a: Int, b: Int)
@@ -36,10 +37,13 @@ pub fn to_be_contain_suite() {
       expect.to_contain([Foo(1, 2), Foo(3, 4)], Foo(2, 4))
       |> expect.to_be_equal(
         garanti.Fail(
-          "Expected list to contain Foo(2, 4) but contained [Foo(1, 2), Foo(3, 4)]",
+          "Expected list to contain "
+            <> string.inspect(Foo(2, 4))
+            <> " but contained "
+            <> string.inspect([Foo(1, 2), Foo(3, 4)]),
           [
-            garanti.Actual("[Foo(1, 2), Foo(3, 4)]"),
-            garanti.Expected("Foo(2, 4)"),
+            garanti.Actual(string.inspect([Foo(1, 2), Foo(3, 4)])),
+            garanti.Expected(string.inspect(Foo(2, 4))),
           ],
         ),
       )
