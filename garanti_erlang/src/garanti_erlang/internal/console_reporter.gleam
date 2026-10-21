@@ -12,11 +12,11 @@ import gleam/otp/actor
 /// Start a new reporter and return the subject the suite actors should publish to
 /// regarding their progress.
 pub fn start(
-  done_sub: Subject(Nil),
+  done_sub: Subject(Bool),
   out: console.Output,
   number_suites: Int,
 ) -> Result(actor.Started(Subject(garanti.SuiteResult)), actor.StartError) {
-  actor.new(State(number_suites, 0, 0, []))
+  actor.new(State(number_suites, 0, 0, [], 0))
   |> actor.on_message(fn(s, m) { handle_message(out, s, m, done_sub) })
   |> actor.start()
 }
@@ -27,6 +27,7 @@ type State {
     total_tests: Int,
     total_failures: Int,
     failures: List(#(String, garanti.TestResult)),
+    cancelled_suites: Int,
   )
 }
 
@@ -34,7 +35,7 @@ fn handle_message(
   out: console.Output,
   state: State,
   msg: garanti.SuiteResult,
-  done_sub: Subject(Nil),
+  done_sub: Subject(Bool),
 ) {
   let #(messages, totals) =
     describer.suite_result_report(
@@ -42,6 +43,7 @@ fn handle_message(
         state.total_tests,
         state.total_failures,
         state.failures,
+        state.cancelled_suites,
       ),
       msg,
     )
@@ -53,6 +55,7 @@ fn handle_message(
     totals.total_tests,
     totals.total_failures,
     totals.failures,
+    totals.cancelled_suites,
   )
   |> are_we_done_yet(out, done_sub)
 }
@@ -60,7 +63,7 @@ fn handle_message(
 fn are_we_done_yet(
   new_state: State,
   out: console.Output,
-  done_sub: Subject(Nil),
+  done_sub: Subject(Bool),
 ) {
   case new_state.number_suites {
     0 -> {
@@ -72,7 +75,15 @@ fn are_we_done_yet(
         describer.run_summary(new_state.total_tests, new_state.total_failures),
       )
       //Send a message to the done subject to indicate that all suites are run.
-      process.send(done_sub, Nil)
+      process.send(
+        done_sub,
+        describer.is_successful(describer.ReportTotals(
+          new_state.total_tests,
+          new_state.total_failures,
+          new_state.failures,
+          new_state.cancelled_suites,
+        )),
+      )
       actor.stop()
     }
 

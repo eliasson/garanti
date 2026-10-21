@@ -17,13 +17,14 @@ import gleam/list
 pub fn run(level: garanti.LogLevel) -> Nil {
   let output = console.Output(level)
   runner.run_with_discovered(output, discovery.discover_all_suites(), run_tests)
+  |> runner.exit_with_status
 }
 
 fn run_tests(
   output: console.Output,
   suites: List(garanti.Suite),
   nr_tests_to_run: Int,
-) -> Nil {
+) -> Bool {
   let print = fn(m: report.Message) { console.print(output, m) }
 
   // Create a subject to be notified when all suits have run.
@@ -42,6 +43,15 @@ fn run_tests(
 
       // Start a suite actor for each discovered suite.
       list.each(suites, fn(s) { suite.start(s, started.data) })
+
+      // Wait for all suites to be run until terminating
+      case process.receive(done_sub, within: 10 * 60 * 1000) {
+        Ok(successful) -> successful
+        _ -> {
+          io.println("Test runner timed out!")
+          False
+        }
+      }
     }
 
     _ -> {
@@ -50,16 +60,7 @@ fn run_tests(
           report.Plain("Failed to start the console reporter!"),
         ]),
       )
-      Nil
-    }
-  }
-
-  // Wait for all suites to be run until terminating
-  case process.receive(done_sub, within: 10 * 60 * 1000) {
-    Ok(_) -> Nil
-    _ -> {
-      io.println("Test runner timed out!")
-      Nil
+      False
     }
   }
 }

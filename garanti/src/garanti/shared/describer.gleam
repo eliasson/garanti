@@ -252,7 +252,14 @@ pub type ReportTotals {
     total_failures: Int,
     /// All failures colleted (so far).
     failures: List(#(String, garanti.TestResult)),
+    /// The total number of cancelled suites (so far).
+    cancelled_suites: Int,
   )
+}
+
+/// Check if the run was successful (no failing or cancelled suites).
+pub fn is_successful(totals: ReportTotals) -> Bool {
+  totals.total_failures == 0 && totals.cancelled_suites == 0
 }
 
 /// Get the messages to report for the given suite result as well as an updated accumulator
@@ -289,6 +296,7 @@ pub fn suite_result_report(
             acc.failures,
             list.map(suite_failing_results, fn(tr) { #(suite_name, tr) }),
           ),
+          cancelled_suites: acc.cancelled_suites,
         )
 
       #(messages, new_acc)
@@ -302,7 +310,9 @@ pub fn suite_result_report(
           report.Plain("was cancelled"),
         ]),
       ]
-      #(messages, acc)
+
+      let t = ReportTotals(..acc, cancelled_suites: acc.cancelled_suites + 1)
+      #(messages, t)
     }
   }
 }
