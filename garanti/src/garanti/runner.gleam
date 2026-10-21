@@ -20,6 +20,7 @@ import gleam/javascript/promise.{type Promise}
 pub fn run(level: garanti.LogLevel) -> Nil {
   let output = console.Output(level)
   run_with_discovered(output, discovery.discover_all_suites(), execute_suites)
+  |> exit_with_status
 }
 
 @target(javascript)
@@ -30,27 +31,42 @@ pub fn run(level: garanti.LogLevel) -> Promise(Nil) {
   // everything below this point will be synchronous though.
   use discovered <- promise.map(discovery.discover_all_suites())
   run_with_discovered(output, discovered, execute_suites)
+  |> exit_with_status
 }
+
+/// Signal the outcome of a run through the process exit status.
+pub fn exit_with_status(successful: Bool) -> Nil {
+  case successful {
+    // Just let the runner fall through to the default exit code (0).
+    True -> Nil
+    False -> exit_failure()
+  }
+}
+
+@external(erlang, "garanti_runner_ffi", "exit_failure")
+@external(javascript, "./garanti_runner_ffi.mjs", "exit_failure")
+fn exit_failure() -> Nil
 
 fn execute_suites(
   output: console.Output,
   suites: List(garanti.Suite),
   _nr_tests_to_run: Int,
-) -> Nil {
+) -> Bool {
   suites
   |> list.map(suite.run)
   |> reporter.report(output, _)
-  Nil
 }
 
 /// Run the discovered suites (delegated to the injected `execute` function).
 ///
 /// Analyse, filter (focused), execute.
+///
+/// Returns whether the run was successful, a run without any tests to run is not.
 pub fn run_with_discovered(
   output: console.Output,
   discovered: List(garanti.Suite),
-  execute: fn(console.Output, List(garanti.Suite), Int) -> Nil,
-) -> Nil {
+  execute: fn(console.Output, List(garanti.Suite), Int) -> Bool,
+) -> Bool {
   let print = fn(m: report.Message) { console.print(output, m) }
 
   let suites = focus.filter_focused(discovered)
@@ -70,7 +86,7 @@ pub fn run_with_discovered(
   let tests_to_run = list.filter(suites, fn(s) { !list.is_empty(s.tests) })
   let nr_tests_to_run = list.length(tests_to_run)
 
-  case nr_tests_to_run {
+  let successful = case nr_tests_to_run {
     0 -> {
       console.print(
         output,
@@ -81,7 +97,7 @@ pub fn run_with_discovered(
           ]),
         ]),
       )
-      Nil
+      False
     }
     _ -> execute(output, suites, nr_tests_to_run)
   }
@@ -100,4 +116,6 @@ pub fn run_with_discovered(
     }
     False -> Nil
   }
+
+  successful
 }

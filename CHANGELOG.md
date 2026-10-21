@@ -5,6 +5,7 @@ Notable user-facing changes, newest first.
 ## Unreleased
 
 - Fixed Garanti test that was broke on JavaScript runtime (#23) - contributed by @mooreryan.
+- Exit with status code 1 when the test run failed (or was cancelled).
 
 ## [0.1.1] - 2026-09-21
 

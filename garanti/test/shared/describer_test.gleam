@@ -256,3 +256,59 @@ pub fn failures_summary_suite() {
     }),
   ])
 }
+
+pub fn successful_suite_suite() {
+  let report = fn(results) {
+    list.fold(results, describer.ReportTotals(0, 0, [], 0), fn(acc, r) {
+      describer.suite_result_report(acc, r).1
+    })
+  }
+
+  Suite("When determining the if a run is successful", [
+    Test("it should be successful when all tests passed", fn() {
+      report([
+        garanti.SuiteComplete("Suite A", [
+          garanti.TestResult("test 1", garanti.Pass),
+        ]),
+      ])
+      |> describer.is_successful
+      |> expect.to_be_equal(True)
+    }),
+
+    Test("it should not be successful when a test failed", fn() {
+      report([
+        garanti.SuiteComplete("Suite A", [
+          garanti.TestResult("test 1", garanti.Pass),
+          garanti.TestResult("test 2", garanti.Fail("Oh no!", [])),
+        ]),
+      ])
+      |> describer.is_successful
+      |> expect.to_be_equal(False)
+    }),
+
+    Test("it should not be successful when a test timed out", fn() {
+      report([
+        garanti.SuiteComplete("Suite A", [
+          garanti.TestResult("test 1", garanti.Timeout),
+        ]),
+      ])
+      |> describer.is_successful
+      |> expect.to_be_equal(False)
+    }),
+
+    Test("it should not be successful when a suite was cancelled", fn() {
+      let totals =
+        report([
+          garanti.SuiteComplete("Suite A", [
+            garanti.TestResult("test 1", garanti.Pass),
+          ]),
+          garanti.SuiteCancelled("Suite B"),
+        ])
+
+      expect.all([
+        totals.cancelled_suites |> expect.to_be_equal(1),
+        totals |> describer.is_successful |> expect.to_be_equal(False),
+      ])
+    }),
+  ])
+}
